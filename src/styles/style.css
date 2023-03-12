@@ -1,0 +1,158 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+body{
+    background-color: #dedede;
+}
+
+.wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    grid-auto-rows: minmax(auto, auto);
+    padding: 10px;
+}
+
+.canvas {
+    margin: 10px;
+    grid-column: 1 / 3;
+    grid-row: 1 / 4;
+    position:fixed;
+    top: 0;
+}
+
+#canvas {
+    background-color: #ffffff;
+    margin: 10px;
+}
+
+.selector{
+    margin: 10px;
+    padding-top: 20px;
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.options {
+    margin: 10px;
+    padding-top: 50px;
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.button {
+    width: 100px;
+    margin: 5px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.button:hover{
+    background-color: #3c0808;
+    color: #fff;
+}
+
+.button-tools{
+    width: 100px;
+    margin: 5px;
+    padding: 10px;
+    background-color: #3c0808;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    color: #fff;
+}
+
+.button-tools:hover{
+    background-color: #fff;
+    color: #3c0808;
+}
+
+.controls{
+    margin: 10px;
+    padding-top: 50px;
+    grid-column: 3;
+    grid-row: 3;
+}
+
+.save, .clear, .help, .load{
+    width: 120px;
+    margin: 5px;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.save{
+    background-color: #3c0808;
+    color: #fff;
+}
+
+.clear{
+    background-color: #ff6d6d;
+    color: #000;
+}
+
+.help{
+    background-color: #ffcaca;
+    color: #000;
+}
+
+.load{
+    background-color:  #3c0808;
+    color: #fff;
+}
+.transformation{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+}
+.modal{
+    display: none;
+    width: 80%;
+    height: 80%;
+    justify-content: center;
+    background-color: #fefefe;
+    border: 1px solid #888;
+    padding : 20px;
+}
+
+.modal-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.close{
+    position: relative;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    color: #000;
+}
+
+.titleHelp{
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 5px;
+    color: #3c0808;
+}
+
+.headerHelp{
+    text-align: center;
+    margin-top: 10px;
+    justify-content: center;
+    color: #ffcaca;
+}

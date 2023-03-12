@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="./styles/style.css" />
+		<title>WebGL</title>
+	</head>
+	<body>
+		<div class="wrapper">
+			<div class="canvas">
+				<canvas id="canvas" height="700px" width="700px"></canvas>
+			</div>
+			<div class="selector">
+				<h3 class="header">Select Shape</h3>
+				<div class="select" id="select"></div>
+			</div>
+			<div class="options">
+				<div class="color">
+					<h3 class="header">Shape Color</h3>
+					<input type="color" id="color" name="color" value="#000000" />
+				</div>
+				<div class="transformation">
+					<h3 class="header">Transformation</h3>
+					<label for="translateX">Translation X: </label>
+					<input
+						type="range"
+						min="-1"
+						max="1"
+						value="0"
+						step="0.1"
+						id="translateX"
+					/>
+					<label for="translateY">Translation Y: </label>
+					<input
+						type="range"
+						min="-1"
+						max="1"
+						value="0"
+						step="0.1"
+						id="translateY"
+					/>
+					<label for="dilation">Dilation: </label>
+					<input
+						type="range"
+						min="0.1"
+						max="2"
+						value="1"
+						step="0.1"
+						id="dilation"
+					/>
+					<label for="rotation">Rotation: </label>
+					<input
+						type="range"
+						min="0"
+						max="360"
+						value="0"
+						step="1"
+						id="rotation"
+					/>
+					<label for="shear">Shear: </label>
+					<input
+						type="range"
+						min="-1"
+						max="1"
+						value="0"
+						step="0.1"
+						id="shear"
+					/>
+				</div>
+				<div>
+					<h3 class="header">Tools</h3>
+					<button class="button-tools" id="editBtn">Select</button>
+					<button class="button-tools" id="stopEditBtn">Stop Edit</button>
+					<div class="metode" id="metode"></div>
+				</div>
+				<div>
+					<h3 class="header">Shape</h3>
+					<button class="button" id="lineBtn">Line</button>
+					<button class="button" id="rectangleBtn">Rectangle</button>
+					<button class="button" id="squareBtn">Square</button>
+					<button class="button" id="polygonBtn">Polygon</button>
+					<button class="button" id="polygonCHBtn">
+						Polygon (Convex Hull)
+					</button>
+				</div>
+			</div>
+			<div class="controls">
+				<h3>Save Shapes</h3>
+				<div>
+					<input
+						id="saveShapeFileName"
+						type="text"
+						placeholder="Enter filename (no extension)"
+						size="33"
+					/>
+					<button id="saveShape" class="button1 save">Save Shapes</button>
+				</div>
+				<h3>Save Canvas</h3>
+				<div>
+					<input
+						id="saveCanvasFileName"
+						type="text"
+						placeholder="Enter filename (no extension)"
+						size="33"
+					/>
+					<button id="saveCanvas" class="button1 save">Save Canvas</button>
+				</div>
+				<h3>Load</h3>
+				<div>
+					<input type="file" id="file" accept="text/plain" />
+					<span class="file-custom"></span>
+					<button id="load" class="button1 load">Load</button>
+				</div>
+				<div>
+					<button id="clear" class="button1 clear">Clear Canvas</button>
+					<button id="help" class="button1 help">Help</button>
+				</div>
+                <div id="modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" id="close">&times;</span>
+                        <h4>Help</h4>
+                        <div class="modal-item">
+                            <p class="headerHelp">
+                                <b>Model</b>
+                            </p>
+                            <p class="titleHelp">Garis</p>
+                            <p>
+                                1. Klik tombol "line" untuk memulai menggambar garis<br />
+                                2. Klik pada canvas untuk menentukan titik pertama<br />
+                                3. Klik kembali pada canvas untuk menentukan titik kedua<br/>
+                            </p>
+                            <p class="titleHelp">Persegi</p>
+                            <p>
+                                1. Klik tombol "square" untuk memulai menggambar persegi<br />
+                                2. Klik pada canvas untuk mengambil titik awal<br />
+                                3. Klik kembali pada canvas untuk mengambil titik diagonal<br/>
+                            </p>
+                            <p class="titleHelp">Persegi Panjang</p>
+                            <p>
+                                1. Klik tombol "rectangle" untuk memulai menggambar persegi
+                                panjang<br />
+                                2. Klik pada canvas untuk mengambil titik awal<br />
+                                3. Klik kembali pada canvas untuk mengambil titik diagonal<br/>
+                            </p>
+                            <p class="titleHelp">Polygon</p>
+                            <p>
+                                1. Klik tombol "polygon"<br />
+                                2. Klik pada canvas untuk mulai mengambil titik<br />
+                                3. Ulangi langkah kedua hingga telah selesai menentukan titik<br/>
+                                4. Klik kanan untuk menyelesaikan gambar <br/>
+                            </p>
+                            <p class="titleHelp">Polygon Convex Hull</p>
+                            <p>
+                                1. Klik tombol "polygon Convex Hull"<br />
+                                2. Klik pada canvas untuk mulai mengambil titik<br />
+                                3. Ulangi langkah kedua hingga telah selesai menentukan titik, titik bebas untuk ditekan dimana saja<br/>
+                                4. Klik kanan untuk menyelesaikan gambar <br/>
+                            </p>
+
+                            <p class="headerHelp">
+                                <b>Fitur</b>
+                            </p>
+    
+                            <p class="titleHelp">Edit</p>
+                            <p>
+                                1. Pilih objek yang ingin diedit pada select object di kanan atas<br />
+                                2. Klik tombol select<br />
+                                3. Pilih fitur yang ingin diedit<br />
+                                <li><b>Color</b> : Pilih warna yang diinginkan<br /></li>
+                                <li>
+                                    <b>Translasi X</b> : Gerakkan slider untuk menggeser objek di
+                                    arah sumbu x<br />
+                                </li>
+                                <li>
+                                    <b>Translasi Y</b> : Gerakkan slider untuk menggeser objek di
+                                    arah sumbu y<br />
+                                </li>
+                                <li><b>Rotasi</b> : Gerakkan slider untuk memutar objek<br /></li>
+                                <li>
+                                    <b>Dilatasi</b> : Gerakkan slider untuk memperbesar objek<br />
+                                </li>
+                                <li>
+                                    <b>Shear</b> : Gerakkan slider untuk menggeser objek ke arah
+                                    sumbu x<br />
+                                </li>
+                                <li>
+                                    <b>Size</b> : <br/>
+                                    1. pilih metode yang ada pada pilihan metode spesial (optional)<br />
+                                    2. klik titik yang akan diedit pada canvas<br/>
+                                    3. ubah sesuai kemauan <br/>
+                                    4. klik pada canvas untuk menyelesaikan edit <br/>
+                                </li>
+                            </p>
+                            <p class="titleHelp">Save</p>
+                            <p>
+                                1. Tulis nama file pada kolom input, pilih save object untuk menyimpan beberapa object saja dan pilih save canvas
+                                untuk menyimpan semua object. Memilih object dilakukan melalui select object di kanan atas<br/>
+                                2. Klik tombol save<br />
+                            </p>
+                            <p class="titleHelp">Load</p>
+                            <p>
+                                1. Klik tombol load<br />
+                                2. Pilih file yang ingin dimuat<br />
+                                3. Klik open<br />
+                            </p>
+                        </div>
+                    </div>
+                </div>
+			</div>
+		</div>
+		<script src="./js/script.js"></script>
+	</body>
+</html>
