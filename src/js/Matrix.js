@@ -75,4 +75,29 @@ class Matrix{
       0,0,0,1
     ])
   }
+
+  getProjectionMatrix(type){
+    if(type=="ORTHOGRAPHIC"){
+      return [
+        1,0,0,0,
+        0,1,0,0,
+        0,0,0,0,
+        0,0,0,1
+      ]
+    }else if(type=="PERSPECTIVE"){
+      return [
+        1,0,0,0,
+        0,1,0,0,
+        0,0,0,0,
+        0,0,0,1
+      ]
+    }else{//oblique
+      return [
+        1,0,0,0,
+        0,1,0,0,
+        0,0,0,0,
+        0,0,0,1
+      ]
+    }
+  }
 }
