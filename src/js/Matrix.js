@@ -1,30 +1,24 @@
 class Matrix{
 
-  constructor(){
-    this.m = [
-      1,0,0,0,
-      0,1,0,0,
-      0,0,1,0,
-      0,0,0,1
-    ]
+  constructor(matrix){
+    this.m = matrix
   }
 
   multiply(m1,m2){
-    r = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    for(var i=0;i++;i<16){
-      var r = i%4
-      var c = Math.floor(i/4)
-      for(var it=0;it++;it<4){
-        r[i] += m1[r*4+c+it]*m2[(r+it)*4+c]
+    var result = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    for (var i = 0; i < 4; i++) {
+      for (var j = 0; j < 4; j++) {
+        for (var k = 0; k < 4; k++) {
+          result[i * 4 + j] += m1[i * 4 + k] * m2[k * 4 + j];
+        }
       }
     }
-
-    return r
+    return result;
   }
 
   rotateX(angle){ //in radian
-    cos = Math.cos(angle)
-    sin = Math.sin(angle)
+    let c = Math.cos(angle)
+    let s = Math.sin(angle)
 
     this.m =  this.multiply(this.m,[
       1,0,0,0,
@@ -35,8 +29,8 @@ class Matrix{
   }
 
   rotateY(angle){ //in radian
-    cos = Math.cos(angle)
-    sin = Math.sin(angle)
+    let c = Math.cos(angle)
+    let s = Math.sin(angle)
 
     this.m =  this.multiply(this.m,[
       c,0,s,0,
@@ -47,8 +41,8 @@ class Matrix{
   }
 
   rotateZ(angle){ //in radian
-    cos = Math.cos(angle)
-    sin = Math.sin(angle)
+    let c = Math.cos(angle)
+    let s = Math.sin(angle)
 
     this.m =  this.multiply(this.m,[
       c,-s,0,0,
@@ -60,10 +54,10 @@ class Matrix{
 
   translate(tx,ty,tz){
     this.m =  this.multiply(this.m,[
-      1,0,0,tx,
-      0,1,0,ty,
-      0,0,1,tz,
-      0,0,0,1
+      1,0,0,0,
+      0,1,0,0,
+      0,0,1,0,
+      tx,ty,tz,1
     ])
   }
 
