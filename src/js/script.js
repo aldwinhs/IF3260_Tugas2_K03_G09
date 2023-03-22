@@ -84,11 +84,15 @@ if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
 //
 // Create buffer
 //
-var vertices = [];
+var vertices = [
 
-var colors = [];
+];
 
-var indices = [];
+var colors = [
+];
+
+var indices = [
+];
 
 // Tell OpenGL state machine which program should be active.
 gl.useProgram(program);
@@ -104,17 +108,25 @@ var projMatrix = new Float32Array(16);
 // mat4.lookAt(viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
 // mat4.perspective(projMatrix, glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
 
-worldMatrix = new Matrix([ //GANTI PAKE MATIX TRANSFORMASI KOORDINAT DUNIA KE KOORDINAT KAMERA (BIASANYA MATRIKS IDENTITAS). GESER KAMERA DISINI
-1/2,0,0,0,
-0,1/2,0,0,
-0,0,1/2,0,
-0,0,0,1])
-viewMatrix = [ //GANTI PAKE MATRIX TRANSFORMASINYA, PUTER, GESER OBJEK dll
-0.7,0,-0.7,0,
+// worldMatrix = new Matrix([ //GANTI PAKE MATIX TRANSFORMASI KOORDINAT DUNIA KE KOORDINAT KAMERA (BIASANYA MATRIKS IDENTITAS). GESER KAMERA DISINI
+// 1/2,0,0,0,
+// 0,1/2,0,0,
+// 0,0,1/2,0,
+// 0,0,0,1])
+worldMatrix = new Matrix([1,0,0,0,
+	0,1,0,0,
+	0,0,0,0,
+	0,0,0,1])
+// viewMatrix = [ //GANTI PAKE MATRIX TRANSFORMASINYA, PUTER, GESER OBJEK dll
+// 0.7,0,-0.7,0,
+// 0,1,0,0,
+// 0.7,0,0.7,0,
+// 0,0,0,1]
+viewMatrix = [1,0,0,0,
 0,1,0,0,
-0.7,0,0.7,0,
+0,0,0,0,
 0,0,0,1]
-projMatrix = worldMatrix.getProjectionMatrix("Oblique");
+projMatrix = worldMatrix.getProjectionMatrix("Orthographic");
 
 gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
@@ -256,7 +268,6 @@ const load = (event) => {
 		vertices = model.vertices;
 		indices = model.indices;
 		colors = model.colors;
-		console.log(colors);
 		render();
 	}
 }

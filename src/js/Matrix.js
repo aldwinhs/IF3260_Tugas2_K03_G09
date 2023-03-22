@@ -81,9 +81,9 @@ class Matrix{
 
   getProjectionMatrix(type){
     if(type=="Orthographic"){
-      return this.getOrtho(-3.0, 3.0, -3.0, 3.0, 0.1, 20);
+      return this.getOrtho(-5.0, 5.0, -5.0, 5.0, 0.1, 100);
     }else if(type=="Perspective"){
-      return this.getPersp(45 ,canvas.width/canvas.height, 0.1, 20);
+      return this.getPersp(45 ,canvas.width/canvas.height, 0.1, 100);
     }else if(type=="Oblique"){
       return this.getOblique(-45,-45);
     }
