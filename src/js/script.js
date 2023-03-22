@@ -189,7 +189,7 @@ var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
 
 var worldMatrix = new Float32Array(16);
 var viewMatrix = new Float32Array(16);
-var projMatrix = new Float32Array(16);
+// var projMatrix = new Float32Array(16);
 // mat4.identity(worldMatrix);
 // mat4.lookAt(viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
 // mat4.perspective(projMatrix, glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
@@ -204,11 +204,13 @@ viewMatrix = [ //GANTI PAKE MATRIX TRANSFORMASINYA, PUTER, GESER OBJEK dll
 0,1,0,0,
 0.7,0,0.7,0,
 0,0,0,1]
-projMatrix = [ //GANTI PAKE MATRIX PROYEKSINYA
-1,0,0,0,
-0,1,0,0,
-0,0,0,0,
-0,0,0,1]
+projMatrix = worldMatrix.getProjectionMatrix("Perspective");
+// projMatrix = [ //GANTI PAKE MATRIX PROYEKSINYA
+// 1,0,0,0,
+// 0,1,0,0,
+// 0,0,0,0,
+// 0,0,0,1]
+console.log(projMatrix);
 
 
 gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
@@ -303,6 +305,16 @@ const rotateZ = (event) => {
 	initialRotateZ = event.target.value;
 }
 
+const projection = (event) => {
+	let type = event.target.value;
+	projMatrix = worldMatrix.getProjectionMatrix(type);
+	console.log(projMatrix);
+	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+	gl.clearColor(0.75, 0.85, 0.8, 1.0);
+	gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+	gl.drawElements(gl.TRIANGLES, boxIndices.length, gl.UNSIGNED_SHORT, 0);
+}
+
 // Listener
 document.getElementById("help").addEventListener("click", showHelp);
 document.getElementById("close").addEventListener("click", closeHelp);
@@ -315,3 +327,4 @@ document.getElementById("scaleZ").addEventListener("input", scale);
 document.getElementById("rotationX").addEventListener("input", rotateX);
 document.getElementById("rotationY").addEventListener("input", rotateY);
 document.getElementById("rotationZ").addEventListener("input", rotateZ);
+document.getElementById("projection").addEventListener("input", projection);
