@@ -115,7 +115,7 @@ var projMatrix = new Float32Array(16);
 // 0,0,0,1])
 worldMatrix = new Matrix([1,0,0,0,
 	0,1,0,0,
-	0,0,0,0,
+	0,0,1,0,
 	0,0,0,1])
 // viewMatrix = [ //GANTI PAKE MATRIX TRANSFORMASINYA, PUTER, GESER OBJEK dll
 // 0.7,0,-0.7,0,
@@ -124,7 +124,7 @@ worldMatrix = new Matrix([1,0,0,0,
 // 0,0,0,1]
 viewMatrix = [1,0,0,0,
 0,1,0,0,
-0,0,0,0,
+0,0,1,0,
 0,0,0,1]
 projMatrix = worldMatrix.getProjectionMatrix("Orthographic");
 
