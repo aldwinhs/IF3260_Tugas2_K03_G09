@@ -84,101 +84,11 @@ if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
 //
 // Create buffer
 //
-var boxVertices = //GANTI PAKE KOORDINAT OBJEKNYA
-[ // X, Y, Z           R, G, B
-	// Top
-	-1.0, 1.0, -1.0,   0.5, 0.5, 0.5,
-	-1.0, 1.0, 1.0,    0.5, 0.5, 0.5,
-	1.0, 1.0, 1.0,     0.5, 0.5, 0.5,
-	1.0, 1.0, -1.0,    0.5, 0.5, 0.5,
+var vertices = [];
 
-	// Left
-	-1.0, 1.0, 1.0,    0.75, 0.25, 0.5,
-	-1.0, -1.0, 1.0,   0.75, 0.25, 0.5,
-	-1.0, -1.0, -1.0,  0.75, 0.25, 0.5,
-	-1.0, 1.0, -1.0,   0.75, 0.25, 0.5,
+var colors = [];
 
-	// Right
-	1.0, 1.0, 1.0,    0.25, 0.25, 0.75,
-	1.0, -1.0, 1.0,   0.25, 0.25, 0.75,
-	1.0, -1.0, -1.0,  0.25, 0.25, 0.75,
-	1.0, 1.0, -1.0,   0.25, 0.25, 0.75,
-
-	// Front
-	1.0, 1.0, 1.0,    1.0, 0.0, 0.15,
-	1.0, -1.0, 1.0,    1.0, 0.0, 0.15,
-	-1.0, -1.0, 1.0,    1.0, 0.0, 0.15,
-	-1.0, 1.0, 1.0,    1.0, 0.0, 0.15,
-
-	// Back
-	1.0, 1.0, -1.0,    0.0, 1.0, 0.15,
-	1.0, -1.0, -1.0,    0.0, 1.0, 0.15,
-	-1.0, -1.0, -1.0,    0.0, 1.0, 0.15,
-	-1.0, 1.0, -1.0,    0.0, 1.0, 0.15,
-
-	// Bottom
-	-1.0, -1.0, -1.0,   0.5, 0.5, 1.0,
-	-1.0, -1.0, 1.0,    0.5, 0.5, 1.0,
-	1.0, -1.0, 1.0,     0.5, 0.5, 1.0,
-	1.0, -1.0, -1.0,    0.5, 0.5, 1.0,
-];
-
-var boxIndices = //GANTI PAKE INDEXNYA
-[
-	// Top
-	0, 1, 2,
-	0, 2, 3,
-
-	// Left
-	5, 4, 6,
-	6, 4, 7,
-
-	// Right
-	8, 9, 10,
-	8, 10, 11,
-
-	// Front
-	13, 12, 14,
-	15, 14, 12,
-
-	// Back
-	16, 17, 18,
-	16, 18, 19,
-
-	// Bottom
-	21, 20, 22,
-	22, 20, 23
-];
-
-var boxVertexBufferObject = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, boxVertexBufferObject);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(boxVertices), gl.STATIC_DRAW);
-
-var boxIndexBufferObject = gl.createBuffer();
-gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, boxIndexBufferObject);
-gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(boxIndices), gl.STATIC_DRAW);
-
-var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
-var colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
-gl.vertexAttribPointer(
-	positionAttribLocation, // Attribute location
-	3, // Number of elements per attribute
-	gl.FLOAT, // Type of elements
-	gl.FALSE,
-	6 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-	0 // Offset from the beginning of a single vertex to this attribute
-);
-gl.vertexAttribPointer(
-	colorAttribLocation, // Attribute location
-	3, // Number of elements per attribute
-	gl.FLOAT, // Type of elements
-	gl.FALSE,
-	6 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-	3 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
-);
-
-gl.enableVertexAttribArray(positionAttribLocation);
-gl.enableVertexAttribArray(colorAttribLocation);
+var indices = [];
 
 // Tell OpenGL state machine which program should be active.
 gl.useProgram(program);
@@ -189,7 +99,7 @@ var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
 
 var worldMatrix = new Float32Array(16);
 var viewMatrix = new Float32Array(16);
-// var projMatrix = new Float32Array(16);
+var projMatrix = new Float32Array(16);
 // mat4.identity(worldMatrix);
 // mat4.lookAt(viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
 // mat4.perspective(projMatrix, glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
@@ -204,14 +114,7 @@ viewMatrix = [ //GANTI PAKE MATRIX TRANSFORMASINYA, PUTER, GESER OBJEK dll
 0,1,0,0,
 0.7,0,0.7,0,
 0,0,0,1]
-projMatrix = worldMatrix.getProjectionMatrix("Perspective");
-// projMatrix = [ //GANTI PAKE MATRIX PROYEKSINYA
-// 1,0,0,0,
-// 0,1,0,0,
-// 0,0,0,0,
-// 0,0,0,1]
-console.log(projMatrix);
-
+projMatrix = worldMatrix.getProjectionMatrix("Oblique");
 
 gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
@@ -220,12 +123,7 @@ gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 //
 // Main render loop
 //
-// var identityMatrix = new Matrix();
-// mat4.identity(identityMatrix);
-
-gl.clearColor(0.75, 0.85, 0.8, 1.0);
-gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-gl.drawElements(gl.TRIANGLES, boxIndices.length, gl.UNSIGNED_SHORT, 0);
+render();
 
 
 // Variables
@@ -238,6 +136,48 @@ let initialScaleZ = 1;
 let initialRotateX = 0;
 let initialRotateY = 0;
 let initialRotateZ = 0;
+
+function render() {
+	// Vertex Buffer
+	const vertex_buffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+	const position = gl.getAttribLocation(program, `vertPosition`);
+	gl.enableVertexAttribArray(position);
+	gl.vertexAttribPointer(
+		position, // Attribute location
+		3, // Number of elements per attribute
+		gl.FLOAT, // Type of elements
+		gl.FALSE,
+		3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+		0 // Offset from the beginning of a single vertex to this attribute
+	);
+ 
+	// Color Buffer
+	const color_buffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+	const color = gl.getAttribLocation(program, `vertColor`);
+	gl.enableVertexAttribArray(color);
+	gl.vertexAttribPointer(
+		color, // Attribute location
+		3, // Number of elements per attribute
+		gl.FLOAT, // Type of elements
+		gl.FALSE,
+		3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+		0 // Offset from the beginning of a single vertex to this attribute
+	);
+ 
+	// Index Buffer
+	const index_buffer = gl.createBuffer();
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+ 
+	// Draw
+	gl.clearColor(0.75, 0.85, 0.8, 1.0);
+	gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+	gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+ }
 
 const showHelp = (event) => {
 	document.getElementById("modal").style.display = "block";
@@ -253,9 +193,7 @@ const translate = () => {
 	let z = document.getElementById("translateZ").value;
 	worldMatrix.translate(x - initialX, y - initialY, z - initialZ);
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	gl.clearColor(0.75, 0.85, 0.8, 1.0);
-	gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-	gl.drawElements(gl.TRIANGLES, boxIndices.length, gl.UNSIGNED_SHORT, 0);
+	render();
 	initialX = x;
 	initialY = y;
 	initialZ = z;
@@ -267,9 +205,7 @@ const scale = () => {
 	let z = document.getElementById("scaleZ").value;
 	worldMatrix.scale(x/initialScaleX, y/initialScaleY, z/initialScaleZ);
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	gl.clearColor(0.75, 0.85, 0.8, 1.0);
-	gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-	gl.drawElements(gl.TRIANGLES, boxIndices.length, gl.UNSIGNED_SHORT, 0);
+	render();
 	initialScaleX = x;
 	initialScaleY = y;
 	initialScaleZ = z;
@@ -279,9 +215,7 @@ const rotateX = (event) => {
 	let angle = event.target.value - initialRotateX;
 	worldMatrix.rotateX(angle * Math.PI);
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	gl.clearColor(0.75, 0.85, 0.8, 1.0);
-	gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-	gl.drawElements(gl.TRIANGLES, boxIndices.length, gl.UNSIGNED_SHORT, 0);
+	render();
 	initialRotateX = event.target.value;
 }
 
@@ -289,9 +223,7 @@ const rotateY = (event) => {
 	let angle = event.target.value - initialRotateY;
 	worldMatrix.rotateY(angle * Math.PI);
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	gl.clearColor(0.75, 0.85, 0.8, 1.0);
-	gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-	gl.drawElements(gl.TRIANGLES, boxIndices.length, gl.UNSIGNED_SHORT, 0);
+	render();
 	initialRotateY = event.target.value;
 }
 
@@ -299,20 +231,34 @@ const rotateZ = (event) => {
 	let angle = event.target.value - initialRotateZ;
 	worldMatrix.rotateZ(angle * Math.PI);
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	gl.clearColor(0.75, 0.85, 0.8, 1.0);
-	gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-	gl.drawElements(gl.TRIANGLES, boxIndices.length, gl.UNSIGNED_SHORT, 0);
+	render();
 	initialRotateZ = event.target.value;
 }
 
 const projection = (event) => {
 	let type = event.target.value;
 	projMatrix = worldMatrix.getProjectionMatrix(type);
-	console.log(projMatrix);
 	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
-	gl.clearColor(0.75, 0.85, 0.8, 1.0);
-	gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-	gl.drawElements(gl.TRIANGLES, boxIndices.length, gl.UNSIGNED_SHORT, 0);
+	render();
+}
+
+const load = (event) => {
+	const file = document.getElementById('file').files[0];
+	if (file == undefined){
+		alert("No file selected");
+		return;
+	}
+
+	const reader = new FileReader();
+	reader.readAsText(file, "UTF-8");
+	reader.onload = (event) => {
+		const model = JSON.parse(event.target.result);
+		vertices = model.vertices;
+		indices = model.indices;
+		colors = model.colors;
+		console.log(colors);
+		render();
+	}
 }
 
 // Listener
@@ -328,3 +274,4 @@ document.getElementById("rotationX").addEventListener("input", rotateX);
 document.getElementById("rotationY").addEventListener("input", rotateY);
 document.getElementById("rotationZ").addEventListener("input", rotateZ);
 document.getElementById("projection").addEventListener("input", projection);
+document.getElementById("load").addEventListener("click", load);
