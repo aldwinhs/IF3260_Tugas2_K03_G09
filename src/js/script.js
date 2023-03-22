@@ -127,6 +127,10 @@ viewMatrix = [1,0,0,0,
 0,0,1,0,
 0,0,0,1]
 projMatrix = worldMatrix.getProjectionMatrix("Orthographic");
+// projMatrix = [1,0,0,0,
+// 0,1,0,0,
+// 0,0,1,0,
+// 0,0,0,1]
 
 gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
