@@ -113,12 +113,27 @@
 						id="rotationZ"
 					/>
 				</div>
-				<!-- <div>
-					<h3 class="header">Tools</h3>
-					<button class="button-tools" id="editBtn">Select</button>
-					<button class="button-tools" id="stopEditBtn">Stop Edit</button>
-					<div class="metode" id="metode"></div>
-				</div> -->
+				<div>
+					<h3 class="header">Camera</h3>
+					<label for="cameraRadius">Radius: </label>
+					<input
+						type="range"
+						min="-1"
+						max="1"
+						value="0"
+						step="0.1"
+						id="cameraRadius"
+					/>
+					<label for="cameraRotate">Rotate: </label>
+					<input
+						type="range"
+						min="0"
+						max="360"
+						value="0"
+						step="0.1"
+						id="cameraRotate"
+					/>
+				</div>
 			</div>
 			<div class="controls">
 				<h3>Save</h3>
@@ -138,7 +153,7 @@
 					<button id="load" class="button1 load">Load</button>
 				</div>
 				<div>
-					<button id="clear" class="button1 clear">Clear Canvas</button>
+					<!-- <button id="clear" class="button1 clear">Clear Canvas</button> -->
 					<button id="help" class="button1 help">Help</button>
 				</div>
                 <div id="modal" class="modal">
@@ -235,6 +250,7 @@
 			</div>
 		</div>
 		<script src="./js/Matrix.js"></script>
+		<script src="./js/ViewMatrix.js"></script>
 		<script src="./js/script.js"></script>
 	</body>
 </html>

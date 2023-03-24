@@ -107,7 +107,7 @@ class Matrix{
       0,0,1,0,
       0,0,0,1
     ]
-    var orth = this.getOrtho(-1.0, 1.0, -1.0, 1.0, 0.1, 100);
+    var orth = this.getOrtho(-3, 3, -3, 3, 0.1, 100);
     return this.multiply(this.transpose(res),orth);
   }
 

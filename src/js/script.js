@@ -103,10 +103,6 @@ var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
 var worldMatrix = new Float32Array(16);
 var viewMatrix = new Float32Array(16);
 var projMatrix = new Float32Array(16);
-// mat4.identity(worldMatrix);
-// mat4.lookAt(viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
-// mat4.perspective(projMatrix, glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
-
 // worldMatrix = new Matrix([ //GANTI PAKE MATIX TRANSFORMASI KOORDINAT DUNIA KE KOORDINAT KAMERA (BIASANYA MATRIKS IDENTITAS). GESER KAMERA DISINI
 // 1/2,0,0,0,
 // 0,1/2,0,0,
@@ -121,10 +117,19 @@ worldMatrix = new Matrix([1,0,0,0,
 // 0,1,0,0,
 // 0.7,0,0.7,0,
 // 0,0,0,1]
-viewMatrix = [1,0,0,0,
-0,1,0,0,
-0,0,1,0,
-0,0,0,1]
+// viewMatrix = [1,0,0,0,
+// 0,1,0,0,
+// 0,0,1,0,
+// 0,0,0,1]
+viewMatrix = new ViewMatrix([1,0,0,0,
+	0,1,0,0,
+	0,0,1,0,
+	0,0,0,1])
+viewMatrix.lookAt(
+	[0,0,0,0],
+	[0,1,0,0],
+	[0,0,-1,0],
+	[0,0,5,0])
 projMatrix = worldMatrix.getProjectionMatrix("Orthographic");
 // projMatrix = [1,0,0,0,
 // 0,1,0,0,
@@ -132,7 +137,7 @@ projMatrix = worldMatrix.getProjectionMatrix("Orthographic");
 // 0,0,0,1]
 
 gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
+gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
 gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 
 //
@@ -301,8 +306,8 @@ const load = (event) => {
 		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 
 		// Set view matrix
-		viewMatrix = model.state.viewMatrix;
-		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
+		viewMatrix.m = model.state.viewMatrix;
+		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
 
 		// Set model
 
@@ -331,7 +336,7 @@ const save = (event) => {
 			scale: [initialScaleX, initialScaleY, initialScaleZ],
 			rotation: [initialRotateX, initialRotateY, initialRotateZ],
 			worldMatrix: worldMatrix.m,
-			viewMatrix: viewMatrix,
+			viewMatrix: viewMatrix.m,
 			projection: document.getElementById("projection").value
 		}
 	}
@@ -344,6 +349,21 @@ const save = (event) => {
 
 	document.getElementById("saveFileName").value = "";
 
+}
+
+const radiusC = (event) => {
+	let radius = event.target.value;
+	viewMatrix.m[15] += parseInt(radius);
+	console.log(viewMatrix.m);
+	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+	render();
+}
+
+const rotateC = (event) => {
+	let angle = event.target.value;
+	viewMatrix.rotateAroundOrigin(angle*Math.PI/180);
+	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+	render();
 }
 
 // Listener
@@ -361,3 +381,5 @@ document.getElementById("rotationZ").addEventListener("input", rotateZ);
 document.getElementById("projection").addEventListener("input", projection);
 document.getElementById("load").addEventListener("click", load);
 document.getElementById("save").addEventListener("click", save);
+document.getElementById("cameraRadius").addEventListener("input", radiusC);
+document.getElementById("cameraRotate").addEventListener("input", rotateC);
