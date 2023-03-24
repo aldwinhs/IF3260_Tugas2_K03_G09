@@ -55,5 +55,13 @@
         0, 1, 0,
         0, 1, 0,
         0, 1, 0
-    ]
+    ],
+    "state" : {
+        "rotation" : [0,0,0],
+        "scale" : [1,1,1],
+        "translation" : [0,0,0],
+        "worldMatrix" : [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+        "viewMatrix"  : [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+        "projection" : "Orthographic"
+    }
 }
