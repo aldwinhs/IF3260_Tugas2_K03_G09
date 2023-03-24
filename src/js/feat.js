@@ -200,6 +200,10 @@ const radiusC = (event) => {
 const projection = (event) => {
 	let type = event.target.value;
 	projMatrix = worldMatrix.getProjectionMatrix(type);
+	if (type == "Perspective"){
+		viewMatrix.m[14] = -2;
+		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+	}
 	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 	render();
 }
