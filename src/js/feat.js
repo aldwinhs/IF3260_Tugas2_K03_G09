@@ -25,7 +25,8 @@ const reset = (event) => {
 		document.getElementById("rotationY").value = model.state.rotation[1];
 		document.getElementById("rotationZ").value = model.state.rotation[2];
 		document.getElementById("projection").value = model.state.projection;
-		document.getElementById("rotateC").value = model.state.rotateC;
+		document.getElementById("cameraRotate").value = model.state.rotateC;
+		document.getElementById("cameraRadius").value = model.state.zoom;
 
 		// Set initial values
 		initialX = model.state.translation[0];
@@ -59,19 +60,6 @@ const reset = (event) => {
 		colors = model.colors;
 		render();
 	}
-	// worldMatrix.m = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
-	// gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-
-	// // Reset sliders
-	// document.getElementById("translateX").value = 0;
-	// document.getElementById("translateY").value = 0;
-	// document.getElementById("translateZ").value = 0;
-	// document.getElementById("scaleX").value = 1;
-	// document.getElementById("scaleY").value = 1;
-	// document.getElementById("scaleZ").value = 1;
-	// document.getElementById("rotateX").value = 0;
-	// document.getElementById("rotateY").value = 0;
-	// document.getElementById("rotateZ").value = 0;
 }
 
 const animateRotation = () => {
@@ -240,6 +228,8 @@ const load = (event) => {
 		document.getElementById("rotationY").value = model.state.rotation[1];
 		document.getElementById("rotationZ").value = model.state.rotation[2];
 		document.getElementById("projection").value = model.state.projection;
+		document.getElementById("cameraRotate").value = model.state.rotateC;
+		document.getElementById("cameraRadius").value = model.state.zoom;
 
 		// Set initial values
 		initialX = model.state.translation[0];
@@ -294,8 +284,8 @@ const save = (event) => {
 			rotation: [initialRotateX, initialRotateY, initialRotateZ],
 			worldMatrix: worldMatrix.m,
 			viewMatrix: viewMatrix.m,
-			initialZoom: initialZoom,
-			initialRotateC: initialRotateC,
+			zoom: initialZoom,
+			rotateC: initialRotateC,
 			projection: document.getElementById("projection").value
 		}
 	}
