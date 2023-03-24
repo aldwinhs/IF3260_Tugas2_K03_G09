@@ -139,6 +139,7 @@ render();
 
 
 // Variables
+let rotating = false;
 let initialX = 0;
 let initialY = 0;
 let initialZ = 0;
@@ -148,6 +149,7 @@ let initialScaleZ = 1;
 let initialRotateX = 0;
 let initialRotateY = 0;
 let initialRotateZ = 0;
+let initialZoom = 1;
 
 function render() {
 	// Vertex Buffer
@@ -191,161 +193,11 @@ function render() {
 	gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
  }
 
-const showHelp = (event) => {
-	document.getElementById("modal").style.display = "block";
-}
-
-const closeHelp = (event) => {
-	document.getElementById("modal").style.display = "none";
-}
-
-const translate = () => {
-	let x = document.getElementById("translateX").value;
-	let y = document.getElementById("translateY").value;
-	let z = document.getElementById("translateZ").value;
-	worldMatrix.translate(x - initialX, y - initialY, z - initialZ);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	render();
-	initialX = x;
-	initialY = y;
-	initialZ = z;
-}
-
-const scale = () => {
-	let x = document.getElementById("scaleX").value;
-	let y = document.getElementById("scaleY").value;
-	let z = document.getElementById("scaleZ").value;
-	worldMatrix.scale(x/initialScaleX, y/initialScaleY, z/initialScaleZ);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	render();
-	initialScaleX = x;
-	initialScaleY = y;
-	initialScaleZ = z;
-}
-
-const rotateX = (event) => {
-	let angle = event.target.value - initialRotateX;
-	worldMatrix.rotateX(angle * Math.PI);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	render();
-	initialRotateX = event.target.value;
-}
-
-const rotateY = (event) => {
-	let angle = event.target.value - initialRotateY;
-	worldMatrix.rotateY(angle * Math.PI);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	render();
-	initialRotateY = event.target.value;
-}
-
-const rotateZ = (event) => {
-	let angle = event.target.value - initialRotateZ;
-	worldMatrix.rotateZ(angle * Math.PI);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	render();
-	initialRotateZ = event.target.value;
-}
-
-const projection = (event) => {
-	let type = event.target.value;
-	projMatrix = worldMatrix.getProjectionMatrix(type);
-	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
-	render();
-}
-
-const load = (event) => {
-	const file = document.getElementById('file').files[0];
-	if (file == undefined){
-		alert("No file selected");
-		return;
-	}
-
-	const reader = new FileReader();
-	reader.readAsText(file, "UTF-8");
-	reader.onload = (event) => {
-		// Parse JSON
-		const model = JSON.parse(event.target.result);
-
-		// Get HTML elements
-		document.getElementById("translateX").value = model.state.translation[0];
-		document.getElementById("translateY").value = model.state.translation[1];
-		document.getElementById("translateZ").value = model.state.translation[2];
-		document.getElementById("scaleX").value = model.state.scale[0];
-		document.getElementById("scaleY").value = model.state.scale[1];
-		document.getElementById("scaleZ").value = model.state.scale[2];
-		document.getElementById("rotationX").value = model.state.rotation[0];
-		document.getElementById("rotationY").value = model.state.rotation[1];
-		document.getElementById("rotationZ").value = model.state.rotation[2];
-
-		// Set initial values
-		initialX = model.state.translation[0];
-		initialY = model.state.translation[1];
-		initialZ = model.state.translation[2];
-		initialScaleX = model.state.scale[0];
-		initialScaleY = model.state.scale[1];
-		initialScaleZ = model.state.scale[2];
-		initialRotateX = model.state.rotation[0];
-		initialRotateY = model.state.rotation[1];
-		initialRotateZ = model.state.rotation[2];
-
-		// Set projection
-		projMatrix = worldMatrix.getProjectionMatrix(model.state.projection);
-		gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
-
-		// Set world matrix
-		worldMatrix.m = model.state.worldMatrix;
-		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-
-		// Set view matrix
-		viewMatrix = model.state.viewMatrix;
-		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
-
-		// Set model
-
-		vertices = model.vertices;
-		indices = model.indices;
-		colors = model.colors;
-		render();
-	}
-}
-
-const save = (event) => {
-	
-	// Get File Name
-	let filename = document.getElementById("saveFileName").value;
-	if (!filename){
-		alert("Please enter a file name");
-		return;
-	}
-
-	const model = {
-		vertices: vertices,
-		indices: indices,
-		colors: colors,
-		state: {
-			translation: [initialX, initialY, initialZ],
-			scale: [initialScaleX, initialScaleY, initialScaleZ],
-			rotation: [initialRotateX, initialRotateY, initialRotateZ],
-			worldMatrix: worldMatrix.m,
-			viewMatrix: viewMatrix,
-			projection: document.getElementById("projection").value
-		}
-	}
-
-	let a = document.createElement("a");
-	let file = new Blob([JSON.stringify(model)], {type: "text/plain"});
-	a.href = URL.createObjectURL(file);
-	a.download = filename + ".json";
-	a.click();
-
-	document.getElementById("saveFileName").value = "";
-
-}
-
 // Listener
 document.getElementById("help").addEventListener("click", showHelp);
 document.getElementById("close").addEventListener("click", closeHelp);
+document.getElementById("reset").addEventListener("click", reset);
+document.getElementById("rotating-model").addEventListener("change", rotatingModel);
 document.getElementById("translateX").addEventListener("input", translate);
 document.getElementById("translateY").addEventListener("input", translate);
 document.getElementById("translateZ").addEventListener("input", translate);
@@ -355,6 +207,7 @@ document.getElementById("scaleZ").addEventListener("input", scale);
 document.getElementById("rotationX").addEventListener("input", rotateX);
 document.getElementById("rotationY").addEventListener("input", rotateY);
 document.getElementById("rotationZ").addEventListener("input", rotateZ);
+document.getElementById("zoom").addEventListener("input", zoom);
 document.getElementById("projection").addEventListener("input", projection);
 document.getElementById("load").addEventListener("click", load);
 document.getElementById("save").addEventListener("click", save);
