@@ -144,6 +144,9 @@ const projection = (event) => {
 	if (type == "Perspective"){
 		viewMatrix.m[14] = -2;
 		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+	} else {
+		viewMatrix.m[14] = 0;
+		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
 	}
 	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 	render();
@@ -189,17 +192,25 @@ const load = (event) => {
 		initialZoom = model.state.zoom;
 		initialRotateC = model.state.rotateC;
 
+		// Set view matrix
+		viewMatrix.m = model.state.viewMatrix;
+		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+
 		// Set projection
 		projMatrix = worldMatrix.getProjectionMatrix(model.state.projection);
 		gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 
+		if (model.state.projection == "Perspective"){
+			viewMatrix.m[14] = -2;
+			gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+		} else {
+			viewMatrix.m[14] = 0;
+			gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+		}
+
 		// Set world matrix
 		worldMatrix.m = model.state.worldMatrix;
 		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-
-		// Set view matrix
-		viewMatrix.m = model.state.viewMatrix;
-		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
 
 		// Set model
 
