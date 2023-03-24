@@ -268,12 +268,83 @@ const load = (event) => {
 	const reader = new FileReader();
 	reader.readAsText(file, "UTF-8");
 	reader.onload = (event) => {
+		// Parse JSON
 		const model = JSON.parse(event.target.result);
+
+		// Get HTML elements
+		document.getElementById("translateX").value = model.state.translation[0];
+		document.getElementById("translateY").value = model.state.translation[1];
+		document.getElementById("translateZ").value = model.state.translation[2];
+		document.getElementById("scaleX").value = model.state.scale[0];
+		document.getElementById("scaleY").value = model.state.scale[1];
+		document.getElementById("scaleZ").value = model.state.scale[2];
+		document.getElementById("rotationX").value = model.state.rotation[0];
+		document.getElementById("rotationY").value = model.state.rotation[1];
+		document.getElementById("rotationZ").value = model.state.rotation[2];
+
+		// Set initial values
+		initialX = model.state.translation[0];
+		initialY = model.state.translation[1];
+		initialZ = model.state.translation[2];
+		initialScaleX = model.state.scale[0];
+		initialScaleY = model.state.scale[1];
+		initialScaleZ = model.state.scale[2];
+		initialRotateX = model.state.rotation[0];
+		initialRotateY = model.state.rotation[1];
+		initialRotateZ = model.state.rotation[2];
+
+		// Set projection
+		projMatrix = worldMatrix.getProjectionMatrix(model.state.projection);
+		gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+
+		// Set world matrix
+		worldMatrix.m = model.state.worldMatrix;
+		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+
+		// Set view matrix
+		viewMatrix = model.state.viewMatrix;
+		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
+
+		// Set model
+
 		vertices = model.vertices;
 		indices = model.indices;
 		colors = model.colors;
 		render();
 	}
+}
+
+const save = (event) => {
+	
+	// Get File Name
+	let filename = document.getElementById("saveFileName").value;
+	if (!filename){
+		alert("Please enter a file name");
+		return;
+	}
+
+	const model = {
+		vertices: vertices,
+		indices: indices,
+		colors: colors,
+		state: {
+			translation: [initialX, initialY, initialZ],
+			scale: [initialScaleX, initialScaleY, initialScaleZ],
+			rotation: [initialRotateX, initialRotateY, initialRotateZ],
+			worldMatrix: worldMatrix.m,
+			viewMatrix: viewMatrix,
+			projection: document.getElementById("projection").value
+		}
+	}
+
+	let a = document.createElement("a");
+	let file = new Blob([JSON.stringify(model)], {type: "text/plain"});
+	a.href = URL.createObjectURL(file);
+	a.download = filename + ".json";
+	a.click();
+
+	document.getElementById("saveFileName").value = "";
+
 }
 
 // Listener
@@ -290,3 +361,4 @@ document.getElementById("rotationY").addEventListener("input", rotateY);
 document.getElementById("rotationZ").addEventListener("input", rotateZ);
 document.getElementById("projection").addEventListener("input", projection);
 document.getElementById("load").addEventListener("click", load);
+document.getElementById("save").addEventListener("click", save);
