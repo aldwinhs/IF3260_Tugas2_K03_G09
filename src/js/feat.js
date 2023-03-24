@@ -23,6 +23,7 @@ const reset = (event) => {
 
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+	gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 
 	// Reset sliders
 	document.getElementById("translateX").value = 0;
@@ -144,9 +145,11 @@ const projection = (event) => {
 	if (type == "Perspective"){
 		viewMatrix.m[14] = -2;
 		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+		gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 	} else {
 		viewMatrix.m[14] = 0;
 		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+		gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 	}
 	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 	render();
@@ -195,6 +198,7 @@ const load = (event) => {
 		// Set view matrix
 		viewMatrix.m = model.state.viewMatrix;
 		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+		gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 
 		// Set projection
 		projMatrix = worldMatrix.getProjectionMatrix(model.state.projection);
@@ -203,9 +207,11 @@ const load = (event) => {
 		if (model.state.projection == "Perspective"){
 			viewMatrix.m[14] = -2;
 			gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+			gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 		} else {
 			viewMatrix.m[14] = 0;
 			gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+			gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 		}
 
 		// Set world matrix
@@ -260,5 +266,6 @@ const rotateC = (event) => {
 	let angle = event.target.value;
 	viewMatrix.rotateAroundOrigin(angle*Math.PI/180);
 	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+	gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 	render();
 }
