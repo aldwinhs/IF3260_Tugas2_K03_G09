@@ -70,6 +70,7 @@ gl.useProgram(program);
 var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
 var matViewUniformLocation = gl.getUniformLocation(program, 'mView');
 var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
+var uNormalMatrix = gl.getUniformLocation(program, "uNormalMatrix")
 
 var projMatrix = new Float32Array(16);
 worldMatrix = new Matrix([1,0,0,0,
@@ -85,6 +86,7 @@ projMatrix = worldMatrix.getProjectionMatrix("Orthographic");
 gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
 gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 
 //
 // Main render loop
@@ -146,6 +148,23 @@ function render() {
 	gl.clearColor(0.75, 0.85, 0.8, 1.0);
 	gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 	gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+
+	const normalBuffer = gl.createBuffer();
+	const vertexNormals = calculateNormal(vertices,indices)
+  gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(vertexNormals),gl.STATIC_DRAW)
+	const vertexNormal = gl.getAttribLocation(program, "vertNormal")
+	gl.enableVertexAttribArray(vertexNormal)
+	gl.vertexAttribPointer(
+    vertexNormal,
+    3,
+    gl.FLOAT,
+    gl.FALSE,
+    0,
+    0
+  )
+
+
  }
 
 // get center of object
@@ -162,6 +181,42 @@ function getCenter(vertices) {
 	y /= vertices.length / 3;
 	z /= vertices.length / 3;
 	return [x, y, z];
+}
+
+function calculateNormal(v,i){
+	const n_i = i.length / 3 //x,y,z
+	const n_v = v.length / 3 //three point for each face
+	var normal = []
+	for(var k=0;k<n_v;k++){
+		for(var j=0;j<n_i;j++){
+			if((k==i[j*3]) || (k==i[j*3+1]) || (k==i[j*3+2])){
+				console.log(k,i[j*3],i[j*3+1],i[j*3+2])
+				var v1 = [v[i[j*3]*3],v[i[j*3]*3+1],v[i[j*3]*3+2]]
+				var v2 = [v[i[j*3+1]*3],v[i[j*3+1]*3+1],v[i[j*3+1]*3+2]]
+				var v3 = [v[i[j*3+2]*3],v[i[j*3+2]*3+1],v[i[j*3+2]*3+2]]
+				var a = substract(v1,v2)
+				var b = substract(v1,v3)
+				normal.push(normalize(cross(a,b)))
+				console.log(v1,v2,v3,a,b,cross(a,b),j)
+				break
+			}
+		}
+	}
+	console.log(normal)
+	return normal.flat()
+}
+
+function substract(c,d){ //from c to d
+	return [d[0]-c[0],d[1]-c[1],d[2]-c[2]]
+}
+
+function normalize(a){
+	const ab = Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2])
+	return [a[0]/ab,a[1]/ab,a[2]/ab]
+}
+
+function cross(a,b){
+	return  [ a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0] ]
 }
 
 // Listener
