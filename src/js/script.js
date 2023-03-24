@@ -201,6 +201,22 @@ function render() {
 	gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
  }
 
+// get center of object
+function getCenter(vertices) {
+	let x = 0;
+	let y = 0;
+	let z = 0;
+	for (let i = 0; i < vertices.length; i += 3) {
+		x += vertices[i];
+		y += vertices[i + 1];
+		z += vertices[i + 2];
+	}
+	x /= vertices.length / 3;
+	y /= vertices.length / 3;
+	z /= vertices.length / 3;
+	return [x, y, z];
+}
+
 // Listener
 document.getElementById("help").addEventListener("click", showHelp);
 document.getElementById("close").addEventListener("click", closeHelp);

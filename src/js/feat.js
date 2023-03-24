@@ -46,8 +46,13 @@ const translate = () => {
 	let x = document.getElementById("translateX").value;
 	let y = document.getElementById("translateY").value;
 	let z = document.getElementById("translateZ").value;
-	worldMatrix.translate(x - initialX, y - initialY, z - initialZ);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+	
+    for (let i = 0; vertices.length > i; i+=3) {
+        vertices[i] += x - initialX;
+        vertices[i+1] += y - initialY;
+        vertices[i+2] += z - initialZ;
+    }    
+
 	render();
 	initialX = x;
 	initialY = y;
@@ -55,39 +60,93 @@ const translate = () => {
 }
 
 const scale = () => {
-	let x = document.getElementById("scaleX").value;
-	let y = document.getElementById("scaleY").value;
-	let z = document.getElementById("scaleZ").value;
-	worldMatrix.scale(x/initialScaleX, y/initialScaleY, z/initialScaleZ);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	render();
-	initialScaleX = x;
-	initialScaleY = y;
-	initialScaleZ = z;
+	let x = document.getElementById("scaleX").value / initialScaleX;
+	let y = document.getElementById("scaleY").value / initialScaleY;
+	let z = document.getElementById("scaleZ").value / initialScaleZ;
+	
+    for (let i = 0; vertices.length > i; i+=3) {
+        vertices[i] *= x;
+        vertices[i+1] *= y;
+        vertices[i+2] *= z;
+    }
+
+    render();
+
+	initialScaleX = x * initialScaleX;
+	initialScaleY = y * initialScaleY;
+	initialScaleZ = z * initialScaleZ;
 }
 
 const rotateX = (event) => {
 	let angle = event.target.value - initialRotateX;
-	worldMatrix.rotateX(angle * Math.PI);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	render();
+
+    let center = getCenter(vertices);
+	
+    for (let i = 0; vertices.length > i; i+=3) {
+        let x = vertices[i] - center[0];
+        let y = vertices[i+1] - center[1];
+        let z = vertices[i+2] - center[2];
+
+        let newX = x;
+        let newY = y * Math.cos(angle * Math.PI) - z * Math.sin(angle * Math.PI);
+        let newZ = y * Math.sin(angle * Math.PI) + z * Math.cos(angle * Math.PI);
+
+        vertices[i] = newX + center[0];
+        vertices[i+1] = newY + center[1];
+        vertices[i+2] = newZ + center[2];
+    }
+
+    render();
+
 	initialRotateX = event.target.value;
 }
 
 const rotateY = (event) => {
 	let angle = event.target.value - initialRotateY;
-	worldMatrix.rotateY(angle * Math.PI);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	render();
-	initialRotateY = event.target.value;
+	
+    let center = getCenter(vertices);
+
+    for (let i = 0; vertices.length > i; i+=3) {
+        let x = vertices[i] - center[0];
+        let y = vertices[i+1] - center[1];
+        let z = vertices[i+2] - center[2];
+
+        let newX = x * Math.cos(angle * Math.PI) + z * Math.sin(angle * Math.PI);
+        let newY = y;
+        let newZ = -x * Math.sin(angle * Math.PI) + z * Math.cos(angle * Math.PI);
+
+        vertices[i] = newX + center[0];
+        vertices[i+1] = newY + center[1];
+        vertices[i+2] = newZ + center[2];
+    }
+
+    render();
+
+    initialRotateY = event.target.value;
 }
 
 const rotateZ = (event) => {
 	let angle = event.target.value - initialRotateZ;
-	worldMatrix.rotateZ(angle * Math.PI);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	render();
-	initialRotateZ = event.target.value;
+	
+    let center = getCenter(vertices);
+
+    for (let i = 0; vertices.length > i; i+=3) {
+        let x = vertices[i] - center[0];
+        let y = vertices[i+1] - center[1];
+        let z = vertices[i+2] - center[2];
+
+        let newX = x * Math.cos(angle * Math.PI) - y * Math.sin(angle * Math.PI);
+        let newY = x * Math.sin(angle * Math.PI) + y * Math.cos(angle * Math.PI);
+        let newZ = z;
+
+        vertices[i] = newX + center[0];
+        vertices[i+1] = newY + center[1];
+        vertices[i+2] = newZ + center[2];
+    }
+
+    render();
+
+    initialRotateZ = event.target.value;
 }
 
 const zoom = (event) => {
