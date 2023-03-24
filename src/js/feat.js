@@ -7,67 +7,46 @@ const closeHelp = (event) => {
 }
 
 const reset = (event) => {
-	const file = document.getElementById('file').files[0];
-	const reader = new FileReader();
-	reader.readAsText(file, "UTF-8");
-	reader.onload = (event) => {
-		// Parse JSON
-		const model = JSON.parse(event.target.result);
+	worldMatrix.m = [
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1
+	];
 
-		// Get HTML elements
-		document.getElementById("translateX").value = model.state.translation[0];
-		document.getElementById("translateY").value = model.state.translation[1];
-		document.getElementById("translateZ").value = model.state.translation[2];
-		document.getElementById("scaleX").value = model.state.scale[0];
-		document.getElementById("scaleY").value = model.state.scale[1];
-		document.getElementById("scaleZ").value = model.state.scale[2];
-		document.getElementById("rotationX").value = model.state.rotation[0];
-		document.getElementById("rotationY").value = model.state.rotation[1];
-		document.getElementById("rotationZ").value = model.state.rotation[2];
-		document.getElementById("projection").value = model.state.projection;
-		document.getElementById("cameraRotate").value = model.state.rotateC;
-		document.getElementById("cameraRadius").value = model.state.zoom;
+	viewMatrix.m = [
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1
+	];
 
-		// Set initial values
-		initialX = model.state.translation[0];
-		initialY = model.state.translation[1];
-		initialZ = model.state.translation[2];
-		initialScaleX = model.state.scale[0];
-		initialScaleY = model.state.scale[1];
-		initialScaleZ = model.state.scale[2];
-		initialRotateX = model.state.rotation[0];
-		initialRotateY = model.state.rotation[1];
-		initialRotateZ = model.state.rotation[2];
-		initialZoom = model.state.zoom;
-		initialRotateC = model.state.rotateC;
+	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
 
-		// Set projection
-		projMatrix = worldMatrix.getProjectionMatrix(model.state.projection);
-		gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+	// Reset sliders
+	document.getElementById("translateX").value = 0;
+	document.getElementById("translateY").value = 0;
+	document.getElementById("translateZ").value = 0;	
+	document.getElementById("scaleX").value = 1;
+	document.getElementById("scaleY").value = 1;
+	document.getElementById("scaleZ").value = 1;
+	document.getElementById("rotationX").value = 0;
+	document.getElementById("rotationY").value = 0;
+	document.getElementById("rotationZ").value = 0;
+	document.getElementById("cameraRotate").value = 0;
+	document.getElementById("cameraRadius").value = 1;
 
-		// Set world matrix
-		worldMatrix.m = model.state.worldMatrix;
-		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-
-		// Set view matrix
-		viewMatrix.m = model.state.viewMatrix;
-		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
-
-		// Set model
-
-		vertices = model.vertices;
-		indices = model.indices;
-		colors = model.colors;
-		render();
-	}
+	render();
 }
 
 const animateRotation = () => {
-	angle = 0.01 * Math.PI;
-	worldMatrix.rotateX(angle);
-	worldMatrix.rotateY(angle/4);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	render();
+	angle = 0.005 * Math.PI;
+	center = getCenter(vertices);
+	worldMatrix.rotateX(angle, center);
+    worldMatrix.rotateY(angle/4, center);
+    gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+    render();
 	if(rotating) {
 		requestAnimationFrame(animateRotation);
 	}
@@ -87,11 +66,8 @@ const translate = () => {
 	let y = document.getElementById("translateY").value;
 	let z = document.getElementById("translateZ").value;
 	
-    for (let i = 0; vertices.length > i; i+=3) {
-        vertices[i] += x - initialX;
-        vertices[i+1] += y - initialY;
-        vertices[i+2] += z - initialZ;
-    }    
+    worldMatrix.translate(x - initialX, y - initialY, z - initialZ)
+    gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m)
 
 	render();
 	initialX = x;
@@ -104,11 +80,8 @@ const scale = () => {
 	let y = document.getElementById("scaleY").value / initialScaleY;
 	let z = document.getElementById("scaleZ").value / initialScaleZ;
 	
-    for (let i = 0; vertices.length > i; i+=3) {
-        vertices[i] *= x;
-        vertices[i+1] *= y;
-        vertices[i+2] *= z;
-    }
+    worldMatrix.scale(x, y, z);
+	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 
     render();
 
@@ -122,19 +95,8 @@ const rotateX = (event) => {
 
     let center = getCenter(vertices);
 	
-    for (let i = 0; vertices.length > i; i+=3) {
-        let x = vertices[i] - center[0];
-        let y = vertices[i+1] - center[1];
-        let z = vertices[i+2] - center[2];
-
-        let newX = x;
-        let newY = y * Math.cos(angle * Math.PI) - z * Math.sin(angle * Math.PI);
-        let newZ = y * Math.sin(angle * Math.PI) + z * Math.cos(angle * Math.PI);
-
-        vertices[i] = newX + center[0];
-        vertices[i+1] = newY + center[1];
-        vertices[i+2] = newZ + center[2];
-    }
+    worldMatrix.rotateX(angle * Math.PI, center);
+	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 
     render();
 
@@ -146,19 +108,8 @@ const rotateY = (event) => {
 	
     let center = getCenter(vertices);
 
-    for (let i = 0; vertices.length > i; i+=3) {
-        let x = vertices[i] - center[0];
-        let y = vertices[i+1] - center[1];
-        let z = vertices[i+2] - center[2];
-
-        let newX = x * Math.cos(angle * Math.PI) + z * Math.sin(angle * Math.PI);
-        let newY = y;
-        let newZ = -x * Math.sin(angle * Math.PI) + z * Math.cos(angle * Math.PI);
-
-        vertices[i] = newX + center[0];
-        vertices[i+1] = newY + center[1];
-        vertices[i+2] = newZ + center[2];
-    }
+    worldMatrix.rotateY(angle * Math.PI, center);
+	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 
     render();
 
@@ -170,19 +121,8 @@ const rotateZ = (event) => {
 	
     let center = getCenter(vertices);
 
-    for (let i = 0; vertices.length > i; i+=3) {
-        let x = vertices[i] - center[0];
-        let y = vertices[i+1] - center[1];
-        let z = vertices[i+2] - center[2];
-
-        let newX = x * Math.cos(angle * Math.PI) - y * Math.sin(angle * Math.PI);
-        let newY = x * Math.sin(angle * Math.PI) + y * Math.cos(angle * Math.PI);
-        let newZ = z;
-
-        vertices[i] = newX + center[0];
-        vertices[i+1] = newY + center[1];
-        vertices[i+2] = newZ + center[2];
-    }
+    worldMatrix.rotateZ(angle * Math.PI, center);
+	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 
     render();
 
@@ -191,6 +131,7 @@ const rotateZ = (event) => {
 
 const radiusC = (event) => {
 	let zoom = event.target.value/initialZoom;
+
 	worldMatrix.scale(zoom, zoom, zoom);
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 	render();

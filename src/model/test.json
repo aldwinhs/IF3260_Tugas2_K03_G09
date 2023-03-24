@@ -81,6 +81,8 @@
         "translation" : [0,0,0],
         "worldMatrix" : [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
         "viewMatrix"  : [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
-        "projection" : "Perspective"
+        "projection" : "Orthographic",
+        "zoom" : 1,
+        "rotateC" : 0
     }
 }

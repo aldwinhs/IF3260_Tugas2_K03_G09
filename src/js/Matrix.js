@@ -16,40 +16,67 @@ class Matrix{
     return result;
   }
 
-  rotateX(angle){ //in radian
+  rotateX(angle, p){ //in radian
     let c = Math.cos(angle)
     let s = Math.sin(angle)
 
-    this.m =  this.multiply(this.m,[
+    let transformation = this.multiply(this.m, [
+      1,0,0,0,
+      0,1,0,0,
+      0,0,1,0,
+      -p[0],-p[1],-p[2],1
+    ])
+
+    this.m =  this.multiply(transformation,[
       1,0,0,0,
       0,c,-s,0,
       0,s,c,0,
       0,0,0,1
     ])
+
+    this.translate(p[0],p[1],p[2])
   }
 
-  rotateY(angle){ //in radian
+  rotateY(angle, p){ //in radian
     let c = Math.cos(angle)
     let s = Math.sin(angle)
 
-    this.m =  this.multiply(this.m,[
+    let transformation = this.multiply(this.m, [
+      1,0,0,0,
+      0,1,0,0,
+      0,0,1,0,
+      -p[0],-p[1],-p[2],1
+    ])
+
+    this.m =  this.multiply(transformation,[
       c,0,s,0,
       0,1,0,0,
       -s,0,c,0,
       0,0,0,1
     ])
+
+    this.translate(p[0],p[1],p[2])
   }
 
-  rotateZ(angle){ //in radian
+  rotateZ(angle, p){ //in radian
     let c = Math.cos(angle)
     let s = Math.sin(angle)
 
-    this.m =  this.multiply(this.m,[
+    let transformation = this.multiply(this.m, [
+      1,0,0,0,
+      0,1,0,0,
+      0,0,1,0,
+      -p[0],-p[1],-p[2],1
+    ])
+
+    this.m =  this.multiply(transformation,[
       c,-s,0,0,
       s,c,0,0,
       0,0,1,0,
       0,0,0,1
     ])
+
+    this.translate(p[0],p[1],p[2])
   }
 
   translate(tx,ty,tz){

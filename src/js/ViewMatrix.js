@@ -21,7 +21,7 @@ class ViewMatrix extends Matrix{
   rotateAroundOrigin(angle){ //in radian
     var oldPos = this.getCameraPosition()
     this.setCameraPosition([0,0,0,0])
-    this.rotateY(angle)
+    this.rotateY(angle, [0.0,0])
     this.setCameraPosition(oldPos)
   }
 }
