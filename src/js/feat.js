@@ -6,20 +6,72 @@ const closeHelp = (event) => {
 	document.getElementById("modal").style.display = "none";
 }
 
-const reset = () => {
-	worldMatrix.m = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+const reset = (event) => {
+	const file = document.getElementById('file').files[0];
+	const reader = new FileReader();
+	reader.readAsText(file, "UTF-8");
+	reader.onload = (event) => {
+		// Parse JSON
+		const model = JSON.parse(event.target.result);
 
-	// Reset sliders
-	document.getElementById("translateX").value = 0;
-	document.getElementById("translateY").value = 0;
-	document.getElementById("translateZ").value = 0;
-	document.getElementById("scaleX").value = 1;
-	document.getElementById("scaleY").value = 1;
-	document.getElementById("scaleZ").value = 1;
-	document.getElementById("rotateX").value = 0;
-	document.getElementById("rotateY").value = 0;
-	document.getElementById("rotateZ").value = 0;
+		// Get HTML elements
+		document.getElementById("translateX").value = model.state.translation[0];
+		document.getElementById("translateY").value = model.state.translation[1];
+		document.getElementById("translateZ").value = model.state.translation[2];
+		document.getElementById("scaleX").value = model.state.scale[0];
+		document.getElementById("scaleY").value = model.state.scale[1];
+		document.getElementById("scaleZ").value = model.state.scale[2];
+		document.getElementById("rotationX").value = model.state.rotation[0];
+		document.getElementById("rotationY").value = model.state.rotation[1];
+		document.getElementById("rotationZ").value = model.state.rotation[2];
+		document.getElementById("projection").value = model.state.projection;
+		document.getElementById("rotateC").value = model.state.rotateC;
+
+		// Set initial values
+		initialX = model.state.translation[0];
+		initialY = model.state.translation[1];
+		initialZ = model.state.translation[2];
+		initialScaleX = model.state.scale[0];
+		initialScaleY = model.state.scale[1];
+		initialScaleZ = model.state.scale[2];
+		initialRotateX = model.state.rotation[0];
+		initialRotateY = model.state.rotation[1];
+		initialRotateZ = model.state.rotation[2];
+		initialZoom = model.state.zoom;
+		initialRotateC = model.state.rotateC;
+
+		// Set projection
+		projMatrix = worldMatrix.getProjectionMatrix(model.state.projection);
+		gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+
+		// Set world matrix
+		worldMatrix.m = model.state.worldMatrix;
+		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+
+		// Set view matrix
+		viewMatrix.m = model.state.viewMatrix;
+		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+
+		// Set model
+
+		vertices = model.vertices;
+		indices = model.indices;
+		colors = model.colors;
+		render();
+	}
+	// worldMatrix.m = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
+	// gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+
+	// // Reset sliders
+	// document.getElementById("translateX").value = 0;
+	// document.getElementById("translateY").value = 0;
+	// document.getElementById("translateZ").value = 0;
+	// document.getElementById("scaleX").value = 1;
+	// document.getElementById("scaleY").value = 1;
+	// document.getElementById("scaleZ").value = 1;
+	// document.getElementById("rotateX").value = 0;
+	// document.getElementById("rotateY").value = 0;
+	// document.getElementById("rotateZ").value = 0;
 }
 
 const animateRotation = () => {
@@ -90,7 +142,7 @@ const rotateZ = (event) => {
 	initialRotateZ = event.target.value;
 }
 
-const zoom = (event) => {
+const radiusC = (event) => {
 	let zoom = event.target.value/initialZoom;
 	worldMatrix.scale(zoom, zoom, zoom);
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
@@ -140,6 +192,8 @@ const load = (event) => {
 		initialRotateX = model.state.rotation[0];
 		initialRotateY = model.state.rotation[1];
 		initialRotateZ = model.state.rotation[2];
+		initialZoom = model.state.zoom;
+		initialRotateC = model.state.rotateC;
 
 		// Set projection
 		projMatrix = worldMatrix.getProjectionMatrix(model.state.projection);
@@ -181,6 +235,8 @@ const save = (event) => {
 			rotation: [initialRotateX, initialRotateY, initialRotateZ],
 			worldMatrix: worldMatrix.m,
 			viewMatrix: viewMatrix.m,
+			initialZoom: initialZoom,
+			initialRotateC: initialRotateC,
 			projection: document.getElementById("projection").value
 		}
 	}
@@ -193,14 +249,6 @@ const save = (event) => {
 
 	document.getElementById("saveFileName").value = "";
 
-}
-
-const radiusC = (event) => {
-	let radius = event.target.value;
-	viewMatrix.m[15] += parseInt(radius);
-	console.log(viewMatrix.m);
-	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
-	render();
 }
 
 const rotateC = (event) => {

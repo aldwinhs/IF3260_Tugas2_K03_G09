@@ -103,38 +103,15 @@ var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
 var worldMatrix = new Float32Array(16);
 var viewMatrix = new Float32Array(16);
 var projMatrix = new Float32Array(16);
-// worldMatrix = new Matrix([ //GANTI PAKE MATIX TRANSFORMASI KOORDINAT DUNIA KE KOORDINAT KAMERA (BIASANYA MATRIKS IDENTITAS). GESER KAMERA DISINI
-// 1/2,0,0,0,
-// 0,1/2,0,0,
-// 0,0,1/2,0,
-// 0,0,0,1])
 worldMatrix = new Matrix([1,0,0,0,
 	0,1,0,0,
 	0,0,1,0,
 	0,0,0,1])
-// viewMatrix = [ //GANTI PAKE MATRIX TRANSFORMASINYA, PUTER, GESER OBJEK dll
-// 0.7,0,-0.7,0,
-// 0,1,0,0,
-// 0.7,0,0.7,0,
-// 0,0,0,1]
-// viewMatrix = [1,0,0,0,
-// 0,1,0,0,
-// 0,0,1,0,
-// 0,0,0,1]
 viewMatrix = new ViewMatrix([1,0,0,0,
 	0,1,0,0,
 	0,0,1,0,
 	0,0,0,1])
-viewMatrix.lookAt(
-	[0,0,0,0],
-	[0,1,0,0],
-	[0,0,-1,0],
-	[0,0,5,0])
 projMatrix = worldMatrix.getProjectionMatrix("Orthographic");
-// projMatrix = [1,0,0,0,
-// 0,1,0,0,
-// 0,0,1,0,
-// 0,0,0,1]
 
 gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
@@ -158,6 +135,7 @@ let initialRotateX = 0;
 let initialRotateY = 0;
 let initialRotateZ = 0;
 let initialZoom = 1;
+let initialRotateC = 0;
 
 function render() {
 	// Vertex Buffer
@@ -215,7 +193,6 @@ document.getElementById("scaleZ").addEventListener("input", scale);
 document.getElementById("rotationX").addEventListener("input", rotateX);
 document.getElementById("rotationY").addEventListener("input", rotateY);
 document.getElementById("rotationZ").addEventListener("input", rotateZ);
-document.getElementById("zoom").addEventListener("input", zoom);
 document.getElementById("projection").addEventListener("input", projection);
 document.getElementById("load").addEventListener("click", load);
 document.getElementById("save").addEventListener("click", save);
