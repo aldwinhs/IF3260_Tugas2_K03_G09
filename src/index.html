@@ -12,15 +12,14 @@
 			<div class="canvas">
 				<canvas id="canvas" height="500px" width="500px"></canvas>
 			</div>
-			<!-- <div class="selector">
-				<h3 class="header">Select Shape</h3>
-				<div class="select" id="select"></div>
-			</div> -->
 			<div class="options">
-				<!-- <div class="color">
-					<h3 class="header">Shape Color</h3>
-					<input type="color" id="color" name="color" value="#000000" />
-				</div> -->
+				<div class="rotating-model">
+					<h3 class="header">Rotating Model</h3>
+					<select class="select" id="rotating-model">
+						<option value="off">Off</option>
+						<option value="on">On</option>
+					</select>
+				</div>
 				<div class="projection">
 					<h3 class="header">Select Projection</h3>
 					<select class="select" id="projection">
@@ -112,6 +111,15 @@
 						step="0.01"
 						id="rotationZ"
 					/>
+					<label for="zoom">Zoom: </label>
+					<input
+						type="range"
+						min="0.1"
+						max="2"
+						value="1"
+						step="0.1"
+						id="zoom"
+					/>
 				</div>
 				<div>
 					<h3 class="header">Camera</h3>
@@ -153,7 +161,7 @@
 					<button id="load" class="button1 load">Load</button>
 				</div>
 				<div>
-					<!-- <button id="clear" class="button1 clear">Clear Canvas</button> -->
+					<button id="reset" class="button1 clear">Reset</button>
 					<button id="help" class="button1 help">Help</button>
 				</div>
                 <div id="modal" class="modal">
@@ -161,43 +169,6 @@
                         <span class="close" id="close">&times;</span>
                         <h4>Help</h4>
                         <div class="modal-item">
-                            <p class="headerHelp">
-                                <b>Model</b>
-                            </p>
-                            <p class="titleHelp">Garis</p>
-                            <p>
-                                1. Klik tombol "line" untuk memulai menggambar garis<br />
-                                2. Klik pada canvas untuk menentukan titik pertama<br />
-                                3. Klik kembali pada canvas untuk menentukan titik kedua<br/>
-                            </p>
-                            <p class="titleHelp">Persegi</p>
-                            <p>
-                                1. Klik tombol "square" untuk memulai menggambar persegi<br />
-                                2. Klik pada canvas untuk mengambil titik awal<br />
-                                3. Klik kembali pada canvas untuk mengambil titik diagonal<br/>
-                            </p>
-                            <p class="titleHelp">Persegi Panjang</p>
-                            <p>
-                                1. Klik tombol "rectangle" untuk memulai menggambar persegi
-                                panjang<br />
-                                2. Klik pada canvas untuk mengambil titik awal<br />
-                                3. Klik kembali pada canvas untuk mengambil titik diagonal<br/>
-                            </p>
-                            <p class="titleHelp">Polygon</p>
-                            <p>
-                                1. Klik tombol "polygon"<br />
-                                2. Klik pada canvas untuk mulai mengambil titik<br />
-                                3. Ulangi langkah kedua hingga telah selesai menentukan titik<br/>
-                                4. Klik kanan untuk menyelesaikan gambar <br/>
-                            </p>
-                            <p class="titleHelp">Polygon Convex Hull</p>
-                            <p>
-                                1. Klik tombol "polygon Convex Hull"<br />
-                                2. Klik pada canvas untuk mulai mengambil titik<br />
-                                3. Ulangi langkah kedua hingga telah selesai menentukan titik, titik bebas untuk ditekan dimana saja<br/>
-                                4. Klik kanan untuk menyelesaikan gambar <br/>
-                            </p>
-
                             <p class="headerHelp">
                                 <b>Fitur</b>
                             </p>
@@ -251,6 +222,7 @@
 		</div>
 		<script src="./js/Matrix.js"></script>
 		<script src="./js/ViewMatrix.js"></script>
+		<script src="./js/feat.js"></script>
 		<script src="./js/script.js"></script>
 	</body>
 </html>
