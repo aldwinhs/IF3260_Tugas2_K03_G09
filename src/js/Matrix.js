@@ -83,7 +83,7 @@ class Matrix{
     if(type=="Orthographic"){
       return this.getOrtho(-1.0, 1.0, -1.0, 1.0, 0.1, 100);
     }else if(type=="Perspective"){
-      return this.getPersp(45 ,canvas.width/canvas.height, 0.1, 100);
+      return this.getPersp(60 ,canvas.width/canvas.height, 0.1, 100);
     }else if(type=="Oblique"){
       return this.getOblique(45,45);
     }
@@ -113,14 +113,12 @@ class Matrix{
 
   getPersp(fovy, aspect, near, far){
     var top = near * Math.tan(this.toRadians(fovy));
-    var bottom = -top;
     var right = top*aspect;
-    var left = -right;
     return [
-      (2*near)/(right-left), 0, 0, -near * (left+right)/(right-left),
-      0,(2*near)/(top-bottom),0,-near * (bottom+top)/(top-bottom),
-      0,0,-(far+near)/(far-near),2*near*far/(near-far),
-      0,0,-1,0
+      near/right, 0, 0, 0,
+      0,near/top,0,0,
+      0,0,-(far+near)/(far-near),-1,
+      0,0,2*near*far/(near-far),0
     ]
   }
 
