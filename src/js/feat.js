@@ -119,23 +119,25 @@ const rotatingModel = (event) => {
 }
 
 const translate = () => {
-	let x = document.getElementById("translateX").value;
-	let y = document.getElementById("translateY").value;
-	let z = document.getElementById("translateZ").value;
+	let x = document.getElementById("translateX").value - initialX;
+	let y = document.getElementById("translateY").value - initialY;
+	let z = document.getElementById("translateZ").value - initialZ;
+
+	console.log(x);
 	
     // worldMatrix.translate(x - initialX, y - initialY, z - initialZ)
     // gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m)
 
 	for(let i = 0; i < vertices.length; i+=3) {
-		vertices[i] = vertices[i] + x - initialX;
-		vertices[i+1] = vertices[i+1] + y - initialY;
-		vertices[i+2] = vertices[i+2] + z - initialZ;
+		vertices[i] += x;
+		vertices[i+1] += y;
+		vertices[i+2] += z;
 	}
 
 	render();
-	initialX = x;
-	initialY = y;
-	initialZ = z;
+	initialX += x;
+	initialY += y;
+	initialZ += z;
 }
 
 const scale = () => {
