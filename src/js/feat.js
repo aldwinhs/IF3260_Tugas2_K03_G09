@@ -86,12 +86,21 @@ const selectModel = (event) => {
 		0,0,1,0,
 		0,0,0,1
 	];
+
+	var x = -Math.sin(initialRotateC * Math.PI/180) * 0.1;
+	var z = -Math.cos(initialRotateC * Math.PI/180) * 0.1;
+	viewMatrix.lookAt(
+		[x,0,z],
+		[0,0,0],
+		[0,1,0]
+	)
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 	
 	vertices = loadedModels[index].vertices;
 	colors = loadedModels[index].colors;
 	indices = loadedModels[index].indices;
 	loadedModels[initialModel].projection = document.getElementById("projection").value;
+	initialProject = loadedModels[index].projection
 	
 	if(loadedModels[index].projection == "Perspective") {
 		selectedProjection.selectedIndex = 2;
@@ -263,7 +272,9 @@ const rotateZ = (event) => {
 
 const radiusC = (event) => {
 	let zoom = event.target.value;
+	console.log(projMatrix)
 	projMatrix = worldMatrix.getProjectionMatrix(initialProject, zoom);
+	
 	if (initialProject == "Perspective"){
 		viewMatrix.m[14] = -2;
 		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
@@ -349,7 +360,15 @@ const load = (event) => {
 		initialRotateZ = 0;
 		initialZoom = 60; 
 		initialRotateC = 0;
-		initialProject = "Orthographic";
+		initialProject = model.models[0].projection;
+
+		var x = -Math.sin(initialRotateC * Math.PI/180) * 0.1;
+		var z = -Math.cos(initialRotateC * Math.PI/180) * 0.1;
+		viewMatrix.lookAt(
+			[x,0,z],
+			[0,0,0],
+			[0,1,0]
+		)
 
 		if (model.models[0].projection == "Perspective"){
 			selectedProjection.selectedIndex = 2;
