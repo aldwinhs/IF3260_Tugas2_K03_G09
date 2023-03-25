@@ -100,8 +100,8 @@ viewMatrix = new ViewMatrix([1,0,0,0,
 	0,1,0,0,
 	0,0,1,0,
 	0,0,0,1])
-var x = Math.sin(initialRotateC * Math.PI/180) * initialZoom;
-var z = Math.cos(initialRotateC * Math.PI/180) * initialZoom;
+var x = -Math.sin(initialRotateC * Math.PI/180) * initialZoom;
+var z = -Math.cos(initialRotateC * Math.PI/180) * initialZoom;
 viewMatrix.lookAt(
 	[x,0,z],
 	[0,0,0],
@@ -163,7 +163,7 @@ function render() {
 
 	const normalBuffer = gl.createBuffer();
 	const vertexNormals = calculateNormal(vertices,indices)
-  gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+  	gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(vertexNormals),gl.STATIC_DRAW)
 	const vertexNormal = gl.getAttribLocation(program, "vertNormal")
 	gl.enableVertexAttribArray(vertexNormal)

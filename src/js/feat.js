@@ -15,20 +15,11 @@ const reset = (event) => {
 		0,0,0,1
 	];
 
-	viewMatrix.m = [
-		1,0,0,0,
-		0,1,0,0,
-		0,0,1,0,
-		0,0,0,1
-	];
-
-	viewMatrix.m[14] = 0;
 	projMatrix = worldMatrix.getProjectionMatrix("Orthographic", initialZoom);
 
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
 	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
-	gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
+	
 
 	// Reset sliders
 	document.getElementById("translateX").value = 0;
@@ -57,6 +48,17 @@ const reset = (event) => {
 	initialZoom = 60; 
 	initialRotateC = 0;
 	initialProject = "Orthographic";
+
+	var x = -Math.sin(initialRotateC * Math.PI/180) * initialZoom;
+	var z = -Math.cos(initialRotateC * Math.PI/180) * initialZoom;
+	viewMatrix.lookAt(
+		[x,0,z],
+		[0,0,0],
+		[0,1,0]
+	)
+	viewMatrix.m[14] = 0;
+	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+	gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 
 	let index = document.getElementById("model-select").value
 
