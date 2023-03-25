@@ -46,8 +46,8 @@ class ViewMatrix extends Matrix{
   // }
 
   moveCamera(angle, zoom){
-    var x = Math.sin(angle * Math.PI/180) * zoom;
-    var z = Math.cos(angle * Math.PI/180) * zoom;
+    var x = -Math.sin(angle * Math.PI/180) * zoom;
+    var z = -Math.cos(angle * Math.PI/180) * zoom;
     this.lookAt(
       [x,0,z],
       [0,0,0],

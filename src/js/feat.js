@@ -49,8 +49,8 @@ const reset = (event) => {
 	initialRotateC = 0;
 	initialProject = "Orthographic";
 
-	var x = Math.sin(initialRotateC * Math.PI/180) * initialZoom;
-	var z = Math.cos(initialRotateC * Math.PI/180) * initialZoom;
+	var x = -Math.sin(initialRotateC * Math.PI/180) * initialZoom;
+	var z = -Math.cos(initialRotateC * Math.PI/180) * initialZoom;
 	viewMatrix.lookAt(
 		[x,0,z],
 		[0,0,0],

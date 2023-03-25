@@ -100,8 +100,8 @@ viewMatrix = new ViewMatrix([1,0,0,0,
 	0,1,0,0,
 	0,0,1,0,
 	0,0,0,1])
-var x = Math.sin(initialRotateC * Math.PI/180) * initialZoom;
-var z = Math.cos(initialRotateC * Math.PI/180) * initialZoom;
+var x = -Math.sin(initialRotateC * Math.PI/180) * initialZoom;
+var z = -Math.cos(initialRotateC * Math.PI/180) * initialZoom;
 viewMatrix.lookAt(
 	[x,0,z],
 	[0,0,0],
