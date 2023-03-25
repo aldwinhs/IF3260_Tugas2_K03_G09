@@ -163,7 +163,7 @@ function render() {
 
 	const normalBuffer = gl.createBuffer();
 	const vertexNormals = calculateNormal(vertices,indices)
-  gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+  	gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(vertexNormals),gl.STATIC_DRAW)
 	const vertexNormal = gl.getAttribLocation(program, "vertNormal")
 	gl.enableVertexAttribArray(vertexNormal)
