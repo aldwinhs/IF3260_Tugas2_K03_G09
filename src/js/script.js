@@ -15,6 +15,7 @@ let initialRotateZ = 0;
 let initialZoom = 60;
 let initialRotateC = 0;
 let initialProject = "Orthographic";
+var initialModelProject = [];
 
 console.log('This is working');
 
