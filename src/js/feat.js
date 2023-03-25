@@ -63,7 +63,9 @@ const reset = (event) => {
 	let index = document.getElementById("model-select").value
 
 	// Reset Vertices
-	vertices = [...initialVertices[index]];
+	for(let i = 0; i < vertices.length; i++) {
+		vertices[i] = initialVertices[index][i];
+	}
 
 	render();
 }
@@ -71,6 +73,21 @@ const reset = (event) => {
 const selectModel = (event) => {
 	let index = event.target.value;
 	let selectedProjection = document.getElementById("projection");
+	worldMatrix.m = [
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1
+	];
+
+	viewMatrix.m = [
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1
+	];
+	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+	
 	vertices = loadedModels[index].vertices;
 	colors = loadedModels[index].colors;
 	indices = loadedModels[index].indices;
