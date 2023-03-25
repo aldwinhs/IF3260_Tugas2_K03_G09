@@ -164,8 +164,6 @@ const scale = () => {
 	let y = document.getElementById("scaleY").value / initialScaleY;
 	let z = document.getElementById("scaleZ").value / initialScaleZ;
 	
-    // worldMatrix.scale(x, y, z);
-	// gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 
 	for(let i = 0; i < vertices.length; i+=3) {
 		vertices[i] = vertices[i] * x;
@@ -184,9 +182,6 @@ const rotateX = (event) => {
 	let angle = event.target.value - initialRotateX;
 
     let center = getCenter(vertices);
-	
-    // worldMatrix.rotateX(angle * Math.PI, center);
-	// gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 
 	for(let i = 0; i < vertices.length; i+=3) {
 		let x = vertices[i] - center[0];
@@ -212,9 +207,6 @@ const rotateY = (event) => {
 	
     let center = getCenter(vertices);
 
-    // worldMatrix.rotateY(angle * Math.PI, center);
-	// gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
-
 	for(let i = 0; i < vertices.length; i+=3) {
 		let x = vertices[i] - center[0];
 		let y = vertices[i+1] - center[1];
@@ -238,9 +230,6 @@ const rotateZ = (event) => {
 	let angle = event.target.value - initialRotateZ;
 	
     let center = getCenter(vertices);
-
-    // worldMatrix.rotateZ(angle * Math.PI, center);
-	// gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 
 	for(let i = 0; i < vertices.length; i+=3) {
 		let x = vertices[i] - center[0];
@@ -309,20 +298,6 @@ const load = (event) => {
 		const model = JSON.parse(event.target.result);
 
 		let selectedProjection = document.getElementById("projection");
-
-		// Get HTML elements
-		// document.getElementById("translateX").value = model.state.translation[0];
-		// document.getElementById("translateY").value = model.state.translation[1];
-		// document.getElementById("translateZ").value = model.state.translation[2];
-		// document.getElementById("scaleX").value = model.state.scale[0];
-		// document.getElementById("scaleY").value = model.state.scale[1];
-		// document.getElementById("scaleZ").value = model.state.scale[2];
-		// document.getElementById("rotationX").value = model.state.rotation[0];
-		// document.getElementById("rotationY").value = model.state.rotation[1];
-		// document.getElementById("rotationZ").value = model.state.rotation[2];
-		// document.getElementById("projection").value = model.state.projection;
-		// document.getElementById("cameraRotate").value = model.state.rotateC;
-		// document.getElementById("cameraRadius").value = model.state.zoom;
 
 		// Reset values
 		document.getElementById("translateX").value = 0;
