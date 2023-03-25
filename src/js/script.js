@@ -72,7 +72,8 @@ gl.useProgram(program);
 var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
 var matViewUniformLocation = gl.getUniformLocation(program, 'mView');
 var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
-var uNormalMatrix = gl.getUniformLocation(program, "uNormalMatrix")
+var uNormalMatrix = gl.getUniformLocation(program, "uNormalMatrix");
+var shaderUniformLocation = gl.getUniformLocation(program, 'shader');
 
 var projMatrix = new Float32Array(16);
 worldMatrix = new Matrix([1,0,0,0,
@@ -89,6 +90,7 @@ gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
 gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
+gl.uniform1f(shaderUniformLocation, 0.0);
 
 //
 // Main render loop
@@ -193,19 +195,19 @@ function calculateNormal(v,i){
 	for(var k=0;k<n_v;k++){
 		for(var j=0;j<n_i;j++){
 			if((k==i[j*3]) || (k==i[j*3+1]) || (k==i[j*3+2])){
-				console.log(k,i[j*3],i[j*3+1],i[j*3+2])
+				// console.log(k,i[j*3],i[j*3+1],i[j*3+2])
 				var v1 = [v[i[j*3]*3],v[i[j*3]*3+1],v[i[j*3]*3+2]]
 				var v2 = [v[i[j*3+1]*3],v[i[j*3+1]*3+1],v[i[j*3+1]*3+2]]
 				var v3 = [v[i[j*3+2]*3],v[i[j*3+2]*3+1],v[i[j*3+2]*3+2]]
 				var a = substract(v1,v2)
 				var b = substract(v1,v3)
 				normal.push(normalize(cross(a,b)))
-				console.log(v1,v2,v3,a,b,cross(a,b),j)
+				// console.log(v1,v2,v3,a,b,cross(a,b),j)
 				break
 			}
 		}
 	}
-	console.log(normal)
+	// console.log(normal)
 	return normal.flat()
 }
 
@@ -228,6 +230,7 @@ document.getElementById("close").addEventListener("click", closeHelp);
 document.getElementById("reset").addEventListener("click", reset);
 document.getElementById("model-select").addEventListener("change", selectModel);
 document.getElementById("rotating-model").addEventListener("change", rotatingModel);
+document.getElementById("shading").addEventListener("change", shading);
 document.getElementById("translateX").addEventListener("input", translate);
 document.getElementById("translateY").addEventListener("input", translate);
 document.getElementById("translateZ").addEventListener("input", translate);

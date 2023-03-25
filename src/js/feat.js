@@ -396,3 +396,15 @@ const rotateC = (event) => {
 	gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 	render();
 }
+
+const shading = (event) => {
+	if(event.target.value == "on") {
+		var shaderUniformLocation = gl.getUniformLocation(program, 'shader');
+		gl.uniform1f(shaderUniformLocation, 1.0);
+		render();
+	}else {
+		var shaderUniformLocation = gl.getUniformLocation(program, 'shader');
+		gl.uniform1f(shaderUniformLocation, 0.0);
+		render();
+	}
+}

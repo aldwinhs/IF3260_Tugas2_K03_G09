@@ -10,6 +10,7 @@ uniform mat4 mWorld;
 uniform mat4 mView;
 uniform mat4 mProj;
 uniform mat4 uNormalMatrix;
+uniform float shader;
 
 varying highp vec3 vLighting;
 
@@ -26,5 +27,9 @@ void main()
 
   highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
   vLighting = ambientLight + (directionalLightColor * directional);
+
+  if (shader == 0.0){
+    vLighting /= vLighting;
+  }
 }
 `];
