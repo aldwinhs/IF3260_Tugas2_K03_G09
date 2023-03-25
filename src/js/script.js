@@ -55,14 +55,16 @@ if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
 //
 // Create buffer
 //
-var vertices = [
-];
 
-var colors = [
-];
+var initialVertices = [];
 
-var indices = [
-];
+var vertices = [];
+
+var loadedModels = [];
+
+var colors = [];
+
+var indices = [];
 
 // Tell OpenGL state machine which program should be active.
 gl.useProgram(program);
@@ -95,6 +97,7 @@ render();
 
 
 // Variables
+let initialModel = 0;
 let rotating = false;
 let initialX = 0;
 let initialY = 0;
@@ -223,6 +226,7 @@ function cross(a,b){
 document.getElementById("help").addEventListener("click", showHelp);
 document.getElementById("close").addEventListener("click", closeHelp);
 document.getElementById("reset").addEventListener("click", reset);
+document.getElementById("model-select").addEventListener("change", selectModel);
 document.getElementById("rotating-model").addEventListener("change", rotatingModel);
 document.getElementById("translateX").addEventListener("input", translate);
 document.getElementById("translateY").addEventListener("input", translate);

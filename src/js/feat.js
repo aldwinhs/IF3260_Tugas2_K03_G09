@@ -7,6 +7,7 @@ const closeHelp = (event) => {
 }
 
 const reset = (event) => {
+
 	worldMatrix.m = [
 		1,0,0,0,
 		0,1,0,0,
@@ -21,8 +22,12 @@ const reset = (event) => {
 		0,0,0,1
 	];
 
+	viewMatrix.m[14] = 0;
+	projMatrix = worldMatrix.getProjectionMatrix("Orthographic");
+
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 	gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 
 	// Reset sliders
@@ -37,7 +42,57 @@ const reset = (event) => {
 	document.getElementById("rotationZ").value = 0;
 	document.getElementById("cameraRotate").value = 0;
 	document.getElementById("cameraRadius").value = 1;
+	document.getElementById("projection").selectedIndex = 0;
 
+	// Reset initial values
+	initialX = 0;
+	initialY = 0;
+	initialZ = 0;
+	initialScaleX = 1;
+	initialScaleY = 1;
+	initialScaleZ = 1;
+	initialRotateX = 0;
+	initialRotateY = 0;
+	initialRotateZ = 0;
+	initialZoom = 1; 
+	initialRotateC = 0;
+
+	let index = document.getElementById("model-select").value
+
+	// Reset Vertices
+	vertices = [...initialVertices[index]];
+
+	render();
+}
+
+const selectModel = (event) => {
+	let index = event.target.value;
+	let selectedProjection = document.getElementById("projection");
+	vertices = loadedModels[index].vertices;
+	colors = loadedModels[index].colors;
+	indices = loadedModels[index].indices;
+	loadedModels[initialModel].projection = document.getElementById("projection").value;
+	
+	if(loadedModels[index].projection == "Perspective") {
+		selectedProjection.selectedIndex = 2;
+		viewMatrix.m[14] = -2;
+		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+		gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
+	} else {
+		if(loadedModels[index].projection == "Orthographic") {
+			selectedProjection.selectedIndex = 0;
+		} else {
+			selectedProjection.selectedIndex = 1;
+		}
+		viewMatrix.m[14] = 0;
+		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+		gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
+	}
+
+	projMatrix = worldMatrix.getProjectionMatrix(loadedModels[index].projection);
+	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+
+	initialModel = index;
 	render();
 }
 
@@ -67,8 +122,14 @@ const translate = () => {
 	let y = document.getElementById("translateY").value;
 	let z = document.getElementById("translateZ").value;
 	
-    worldMatrix.translate(x - initialX, y - initialY, z - initialZ)
-    gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m)
+    // worldMatrix.translate(x - initialX, y - initialY, z - initialZ)
+    // gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m)
+
+	for(let i = 0; i < vertices.length; i+=3) {
+		vertices[i] = vertices[i] + x - initialX;
+		vertices[i+1] = vertices[i+1] + y - initialY;
+		vertices[i+2] = vertices[i+2] + z - initialZ;
+	}
 
 	render();
 	initialX = x;
@@ -81,8 +142,14 @@ const scale = () => {
 	let y = document.getElementById("scaleY").value / initialScaleY;
 	let z = document.getElementById("scaleZ").value / initialScaleZ;
 	
-    worldMatrix.scale(x, y, z);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+    // worldMatrix.scale(x, y, z);
+	// gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+
+	for(let i = 0; i < vertices.length; i+=3) {
+		vertices[i] = vertices[i] * x;
+		vertices[i+1] = vertices[i+1] * y;
+		vertices[i+2] = vertices[i+2] * z;
+	}
 
     render();
 
@@ -96,8 +163,22 @@ const rotateX = (event) => {
 
     let center = getCenter(vertices);
 	
-    worldMatrix.rotateX(angle * Math.PI, center);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+    // worldMatrix.rotateX(angle * Math.PI, center);
+	// gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+
+	for(let i = 0; i < vertices.length; i+=3) {
+		let x = vertices[i] - center[0];
+        let y = vertices[i+1] - center[1];
+        let z = vertices[i+2] - center[2];
+
+        let newX = x;
+        let newY = y * Math.cos(angle * Math.PI) - z * Math.sin(angle * Math.PI);
+        let newZ = y * Math.sin(angle * Math.PI) + z * Math.cos(angle * Math.PI);
+
+        vertices[i] = newX + center[0];
+        vertices[i+1] = newY + center[1];
+        vertices[i+2] = newZ + center[2];
+	}
 
     render();
 
@@ -109,8 +190,22 @@ const rotateY = (event) => {
 	
     let center = getCenter(vertices);
 
-    worldMatrix.rotateY(angle * Math.PI, center);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+    // worldMatrix.rotateY(angle * Math.PI, center);
+	// gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+
+	for(let i = 0; i < vertices.length; i+=3) {
+		let x = vertices[i] - center[0];
+		let y = vertices[i+1] - center[1];
+		let z = vertices[i+2] - center[2];
+
+		let newX = x * Math.cos(angle * Math.PI) + z * Math.sin(angle * Math.PI);
+		let newY = y;
+		let newZ = -x * Math.sin(angle * Math.PI) + z * Math.cos(angle * Math.PI);
+
+		vertices[i] = newX + center[0];
+		vertices[i+1] = newY + center[1];
+		vertices[i+2] = newZ + center[2];
+	}
 
     render();
 
@@ -122,8 +217,22 @@ const rotateZ = (event) => {
 	
     let center = getCenter(vertices);
 
-    worldMatrix.rotateZ(angle * Math.PI, center);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+    // worldMatrix.rotateZ(angle * Math.PI, center);
+	// gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+
+	for(let i = 0; i < vertices.length; i+=3) {
+		let x = vertices[i] - center[0];
+		let y = vertices[i+1] - center[1];
+		let z = vertices[i+2] - center[2];
+
+		let newX = x * Math.cos(angle * Math.PI) - y * Math.sin(angle * Math.PI);
+		let newY = x * Math.sin(angle * Math.PI) + y * Math.cos(angle * Math.PI);
+		let newZ = z;
+
+		vertices[i] = newX + center[0];
+		vertices[i+1] = newY + center[1];
+		vertices[i+2] = newZ + center[2];
+	}
 
     render();
 
@@ -168,61 +277,91 @@ const load = (event) => {
 		// Parse JSON
 		const model = JSON.parse(event.target.result);
 
+		let selectedProjection = document.getElementById("projection");
+
 		// Get HTML elements
-		document.getElementById("translateX").value = model.state.translation[0];
-		document.getElementById("translateY").value = model.state.translation[1];
-		document.getElementById("translateZ").value = model.state.translation[2];
-		document.getElementById("scaleX").value = model.state.scale[0];
-		document.getElementById("scaleY").value = model.state.scale[1];
-		document.getElementById("scaleZ").value = model.state.scale[2];
-		document.getElementById("rotationX").value = model.state.rotation[0];
-		document.getElementById("rotationY").value = model.state.rotation[1];
-		document.getElementById("rotationZ").value = model.state.rotation[2];
-		document.getElementById("projection").value = model.state.projection;
-		document.getElementById("cameraRotate").value = model.state.rotateC;
-		document.getElementById("cameraRadius").value = model.state.zoom;
+		// document.getElementById("translateX").value = model.state.translation[0];
+		// document.getElementById("translateY").value = model.state.translation[1];
+		// document.getElementById("translateZ").value = model.state.translation[2];
+		// document.getElementById("scaleX").value = model.state.scale[0];
+		// document.getElementById("scaleY").value = model.state.scale[1];
+		// document.getElementById("scaleZ").value = model.state.scale[2];
+		// document.getElementById("rotationX").value = model.state.rotation[0];
+		// document.getElementById("rotationY").value = model.state.rotation[1];
+		// document.getElementById("rotationZ").value = model.state.rotation[2];
+		// document.getElementById("projection").value = model.state.projection;
+		// document.getElementById("cameraRotate").value = model.state.rotateC;
+		// document.getElementById("cameraRadius").value = model.state.zoom;
 
-		// Set initial values
-		initialX = model.state.translation[0];
-		initialY = model.state.translation[1];
-		initialZ = model.state.translation[2];
-		initialScaleX = model.state.scale[0];
-		initialScaleY = model.state.scale[1];
-		initialScaleZ = model.state.scale[2];
-		initialRotateX = model.state.rotation[0];
-		initialRotateY = model.state.rotation[1];
-		initialRotateZ = model.state.rotation[2];
-		initialZoom = model.state.zoom;
-		initialRotateC = model.state.rotateC;
+		// Reset values
+		document.getElementById("translateX").value = 0;
+		document.getElementById("translateY").value = 0;
+		document.getElementById("translateZ").value = 0;	
+		document.getElementById("scaleX").value = 1;
+		document.getElementById("scaleY").value = 1;
+		document.getElementById("scaleZ").value = 1;
+		document.getElementById("rotationX").value = 0;
+		document.getElementById("rotationY").value = 0;
+		document.getElementById("rotationZ").value = 0;
+		document.getElementById("cameraRotate").value = 0;
+		document.getElementById("cameraRadius").value = 1;
 
-		// Set view matrix
-		viewMatrix.m = model.state.viewMatrix;
-		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
-		gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
+		// Reset initial values
+		// Reset initial values
+		initialX = 0;
+		initialY = 0;
+		initialZ = 0;
+		initialScaleX = 1;
+		initialScaleY = 1;
+		initialScaleZ = 1;
+		initialRotateX = 0;
+		initialRotateY = 0;
+		initialRotateZ = 0;
+		initialZoom = 1; 
+		initialRotateC = 0;
 
-		// Set projection
-		projMatrix = worldMatrix.getProjectionMatrix(model.state.projection);
-		gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
-
-		if (model.state.projection == "Perspective"){
+		if (model.models[0].projection == "Perspective"){
+			selectedProjection.selectedIndex = 2;
 			viewMatrix.m[14] = -2;
 			gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
 			gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 		} else {
+			if(model.models[0].projection == "Orthographic"){
+				selectedProjection.selectedIndex = 0;
+			}else{
+				selectedProjection.selectedIndex = 1;
+			}
 			viewMatrix.m[14] = 0;
 			gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
 			gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 		}
 
-		// Set world matrix
-		worldMatrix.m = model.state.worldMatrix;
-		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+		// Set projection matrix
+		projMatrix = worldMatrix.getProjectionMatrix(model.models[0].projection);
+		gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+
+		// Set loaded models
+		loadedModels = model.models;
+
+		// Set Initial
+		for (let i = 0; i < loadedModels.length; i++){
+			initialVertices.push([...loadedModels[i].vertices]);
+		}
 
 		// Set model
+		vertices = loadedModels[0].vertices;
+		indices = loadedModels[0].indices;
+		colors = loadedModels[0].colors;
 
-		vertices = model.vertices;
-		indices = model.indices;
-		colors = model.colors;
+		// Set selections
+		document.getElementById("model-select").innerHTML = "";
+		for (let i = 0; i < loadedModels.length; i++){
+			let option = document.createElement("option");
+			option.text = loadedModels[i].name;
+			option.value = i;
+			document.getElementById("model-select").add(option);
+		}
+
 		render();
 	}
 }
@@ -237,19 +376,7 @@ const save = (event) => {
 	}
 
 	const model = {
-		vertices: vertices,
-		indices: indices,
-		colors: colors,
-		state: {
-			translation: [initialX, initialY, initialZ],
-			scale: [initialScaleX, initialScaleY, initialScaleZ],
-			rotation: [initialRotateX, initialRotateY, initialRotateZ],
-			worldMatrix: worldMatrix.m,
-			viewMatrix: viewMatrix.m,
-			zoom: initialZoom,
-			rotateC: initialRotateC,
-			projection: document.getElementById("projection").value
-		}
+		"models" : loadedModels
 	}
 
 	let a = document.createElement("a");
