@@ -34,9 +34,6 @@ if (!gl) {
 gl.clearColor(0.75, 0.85, 0.8, 1.0);
 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 gl.enable(gl.DEPTH_TEST);
-// gl.enable(gl.CULL_FACE);
-// gl.frontFace(gl.CCW);
-// gl.cullFace(gl.BACK);
 
 //
 // Create shaders
@@ -203,19 +200,16 @@ function calculateNormal(v,i){
 	for(var k=0;k<n_v;k++){
 		for(var j=0;j<n_i;j++){
 			if((k==i[j*3]) || (k==i[j*3+1]) || (k==i[j*3+2])){
-				// console.log(k,i[j*3],i[j*3+1],i[j*3+2])
 				var v1 = [v[i[j*3]*3],v[i[j*3]*3+1],v[i[j*3]*3+2]]
 				var v2 = [v[i[j*3+1]*3],v[i[j*3+1]*3+1],v[i[j*3+1]*3+2]]
 				var v3 = [v[i[j*3+2]*3],v[i[j*3+2]*3+1],v[i[j*3+2]*3+2]]
 				var a = substract(v1,v2)
 				var b = substract(v1,v3)
 				normal.push(normalize(cross(a,b)))
-				// console.log(v1,v2,v3,a,b,cross(a,b),j)
 				break
 			}
 		}
 	}
-	// console.log(normal)
 	return normal.flat()
 }
 

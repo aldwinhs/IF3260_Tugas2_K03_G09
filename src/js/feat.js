@@ -152,9 +152,6 @@ const translate = () => {
 	let x = document.getElementById("translateX").value - initialX;
 	let y = document.getElementById("translateY").value - initialY;
 	let z = document.getElementById("translateZ").value - initialZ;
-	
-    // worldMatrix.translate(x - initialX, y - initialY, z - initialZ)
-    // gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m)
 
 	for(let i = 0; i < vertices.length; i+=3) {
 		vertices[i] += x;
