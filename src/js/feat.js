@@ -374,6 +374,8 @@ const load = (event) => {
 		// Set loaded models
 		loadedModels = model.models;
 
+		initialVertices = [];
+
 		// Set Initial
 		for (let i = 0; i < loadedModels.length; i++){
 			initialVertices.push([...loadedModels[i].vertices]);
