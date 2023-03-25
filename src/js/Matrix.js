@@ -106,11 +106,11 @@ class Matrix{
     ]
   }
 
-  getProjectionMatrix(type){
+  getProjectionMatrix(type, angle){
     if(type=="Orthographic"){
       return this.getOrtho(-3, 3, -3, 3, -4, 4);
     }else if(type=="Perspective"){
-      return this.getPersp(60 ,canvas.width/canvas.height, 0.1, 100);
+      return this.getPersp(angle ,canvas.width/canvas.height, 0.1, 100);
     }else if(type=="Oblique"){
       return this.getOblique(45,45);
     }

@@ -23,7 +23,7 @@ const reset = (event) => {
 	];
 
 	viewMatrix.m[14] = 0;
-	projMatrix = worldMatrix.getProjectionMatrix("Orthographic");
+	projMatrix = worldMatrix.getProjectionMatrix("Orthographic", initialZoom);
 
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
 	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
@@ -41,7 +41,7 @@ const reset = (event) => {
 	document.getElementById("rotationY").value = 0;
 	document.getElementById("rotationZ").value = 0;
 	document.getElementById("cameraRotate").value = 0;
-	document.getElementById("cameraRadius").value = 1;
+	document.getElementById("cameraRadius").value = 60;
 	document.getElementById("projection").selectedIndex = 0;
 
 	// Reset initial values
@@ -54,8 +54,9 @@ const reset = (event) => {
 	initialRotateX = 0;
 	initialRotateY = 0;
 	initialRotateZ = 0;
-	initialZoom = 1; 
+	initialZoom = 60; 
 	initialRotateC = 0;
+	initialProject = "Orthographic";
 
 	let index = document.getElementById("model-select").value
 
@@ -89,7 +90,7 @@ const selectModel = (event) => {
 		gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 	}
 
-	projMatrix = worldMatrix.getProjectionMatrix(loadedModels[index].projection);
+	projMatrix = worldMatrix.getProjectionMatrix(loadedModels[index].projection, initialZoom);
 	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 
 	initialModel = index;
@@ -240,17 +241,25 @@ const rotateZ = (event) => {
 }
 
 const radiusC = (event) => {
-	let zoom = event.target.value/initialZoom;
-
-	worldMatrix.scale(zoom, zoom, zoom);
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
+	let zoom = event.target.value;
+	projMatrix = worldMatrix.getProjectionMatrix(initialProject, zoom);
+	if (initialProject == "Perspective"){
+		viewMatrix.m[14] = -2;
+		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+		gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
+	} else {
+		viewMatrix.m[14] = 0;
+		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
+		gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
+	}
+	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 	render();
 	initialZoom = event.target.value;
 }
 
 const projection = (event) => {
 	let type = event.target.value;
-	projMatrix = worldMatrix.getProjectionMatrix(type);
+	projMatrix = worldMatrix.getProjectionMatrix(type, initialZoom);
 	if (type == "Perspective"){
 		viewMatrix.m[14] = -2;
 		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
@@ -262,6 +271,7 @@ const projection = (event) => {
 	}
 	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 	render();
+	initialProject = type;
 }
 
 const load = (event) => {
@@ -304,9 +314,8 @@ const load = (event) => {
 		document.getElementById("rotationY").value = 0;
 		document.getElementById("rotationZ").value = 0;
 		document.getElementById("cameraRotate").value = 0;
-		document.getElementById("cameraRadius").value = 1;
+		document.getElementById("cameraRadius").value = 60;
 
-		// Reset initial values
 		// Reset initial values
 		initialX = 0;
 		initialY = 0;
@@ -317,8 +326,9 @@ const load = (event) => {
 		initialRotateX = 0;
 		initialRotateY = 0;
 		initialRotateZ = 0;
-		initialZoom = 1; 
+		initialZoom = 60; 
 		initialRotateC = 0;
+		initialProject = "Orthographic";
 
 		if (model.models[0].projection == "Perspective"){
 			selectedProjection.selectedIndex = 2;
@@ -337,7 +347,7 @@ const load = (event) => {
 		}
 
 		// Set projection matrix
-		projMatrix = worldMatrix.getProjectionMatrix(model.models[0].projection);
+		projMatrix = worldMatrix.getProjectionMatrix(model.models[0].projection, initialZoom);
 		gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 
 		// Set loaded models
@@ -391,10 +401,14 @@ const save = (event) => {
 
 const rotateC = (event) => {
 	let angle = event.target.value;
-	viewMatrix.rotateAroundOrigin(angle*Math.PI/180);
+	viewMatrix.moveCamera(angle, 0.1);
+	if (initialProject == "Perspective"){
+		viewMatrix.m[14] = -2;
+	}
 	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix.m);
 	gl.uniformMatrix4fv(uNormalMatrix,gl.FALSE, viewMatrix.m)
 	render();
+	initialRotateC = event.target.value;
 }
 
 const shading = (event) => {

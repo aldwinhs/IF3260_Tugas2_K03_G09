@@ -1,5 +1,21 @@
 // import {Matrix} from "./Matrix.js"
 
+// Variables
+let initialModel = 0;
+let rotating = false;
+let initialX = 0;
+let initialY = 0;
+let initialZ = 0;
+let initialScaleX = 1;
+let initialScaleY = 1;
+let initialScaleZ = 1;
+let initialRotateX = 0;
+let initialRotateY = 0;
+let initialRotateZ = 0;
+let initialZoom = 60;
+let initialRotateC = 0;
+let initialProject = "Orthographic";
+
 console.log('This is working');
 
 var canvas = document.getElementById('canvas');
@@ -84,6 +100,13 @@ viewMatrix = new ViewMatrix([1,0,0,0,
 	0,1,0,0,
 	0,0,1,0,
 	0,0,0,1])
+var x = Math.sin(initialRotateC * Math.PI/180) * initialZoom;
+var z = Math.cos(initialRotateC * Math.PI/180) * initialZoom;
+viewMatrix.lookAt(
+	[x,0,z],
+	[0,0,0],
+	[0,1,0]
+)
 projMatrix = worldMatrix.getProjectionMatrix("Orthographic");
 
 gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix.m);
@@ -96,22 +119,6 @@ gl.uniform1f(shaderUniformLocation, 0.0);
 // Main render loop
 //
 render();
-
-
-// Variables
-let initialModel = 0;
-let rotating = false;
-let initialX = 0;
-let initialY = 0;
-let initialZ = 0;
-let initialScaleX = 1;
-let initialScaleY = 1;
-let initialScaleZ = 1;
-let initialRotateX = 0;
-let initialRotateY = 0;
-let initialRotateZ = 0;
-let initialZoom = 1;
-let initialRotateC = 0;
 
 function render() {
 	// Vertex Buffer
@@ -222,6 +229,10 @@ function normalize(a){
 
 function cross(a,b){
 	return  [ a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0] ]
+}
+
+function dot(a,b){
+	return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
 }
 
 // Listener
